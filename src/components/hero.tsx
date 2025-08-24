@@ -1,5 +1,6 @@
 import { Buttoon } from "./buttoon";
 import { Memes } from "./memes";
+import { Revenues } from "./revenues";
 
 export function Hero() {
   return (
@@ -7,6 +8,9 @@ export function Hero() {
       {/* Main Hero Section */}
       <div className="text-center space-y-8 mb-16">
         <div className="space-y-4">
+          <div className="flex justify-center mb-4">
+            <Revenues />
+          </div>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-normal text-foreground leading-tight">
             need a website? hire a broke medtech founder
             <span className="text-teal-300">.</span>

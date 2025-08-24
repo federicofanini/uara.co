@@ -8,14 +8,22 @@ import { Suspense } from "react";
 import { GithubStars } from "./github-stars";
 import { MobileMenu } from "./mobile-menu";
 import { SignIn } from "./sign-in";
+import { Menu } from "./menu";
 
 export function Header({ fullWidth = false }: { fullWidth?: boolean }) {
   const pathname = usePathname();
 
   const links = [
+    { href: "/works", label: "works" },
     { href: "/pricing", label: "pricing" },
-    { href: "/docs", label: "docs" },
-    { href: "/updates", label: "updates" },
+    { href: "/transparency", label: "transparency" },
+    {
+      component: <Menu />,
+      className:
+        pathname.split("/").length === 2
+          ? "text-primary"
+          : "text-muted-foreground hover:text-primary",
+    },
     {
       component: <SignIn />,
       className:
@@ -33,7 +41,9 @@ export function Header({ fullWidth = false }: { fullWidth?: boolean }) {
           !fullWidth && "container"
         )}
       >
-        <Logo />
+        <Link href="/">
+          <Logo />
+        </Link>
 
         <div className="md:flex hidden items-center gap-6 text-sm">
           <Link href="https://github.com/federicofanini/uara.co">
