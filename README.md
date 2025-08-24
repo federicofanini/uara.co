@@ -2,15 +2,15 @@
 
 **need a website? hire a broke founder.**
 
-hi 👋 i’m federico. i blew all my money on my medtech startup.  
+hi, i’m federico. i blew all my money on my medtech startup.  
 now i build **clean websites** on a flat monthly subscription.  
 fast, simple, funny. revenue is public. (yes, even when it’s €0).
 
-👉 [uara.co](https://uara.co)
+[uara.co](https://uara.co)
 
 ---
 
-## 💡 what is this?
+## what is this?
 
 a productized dev service, open-sourced because:
 
@@ -20,7 +20,7 @@ a productized dev service, open-sourced because:
 
 ---
 
-## ⚡ features
+## features
 
 - flat monthly fee (netflix vibes, but i actually ship)
 - unlimited requests (1 active at a time — i’m one human, not aws)
@@ -30,7 +30,7 @@ a productized dev service, open-sourced because:
 
 ---
 
-## 🛠 tech stack
+## tech stack
 
 this repo is basically a startup starter kit:
 
@@ -48,7 +48,7 @@ aka: all the buzzwords your indie hacker friends love.
 
 ---
 
-## ⚙️ setup
+## setup
 
 clone + install:
 
@@ -61,7 +61,7 @@ bun dev
 
 ---
 
-## 🔐 security bits
+## security bits
 
 - stripe webhook signature verification
 - supabase row level security (multi-tenant isolation)
@@ -71,7 +71,7 @@ bun dev
 
 ---
 
-## 🤝 contributing
+## contributing
 
 this repo is public for transparency + learning.
 
@@ -85,7 +85,7 @@ open an issue, roast my code, or drop a meme.
 
 ---
 
-## 📜 license
+## license
 
 MIT — use it, remix it, clone it.
 if you launch your own version, pls credit uara.co.
@@ -93,9 +93,7 @@ if you launch your own version, pls credit uara.co.
 
 ---
 
-## 👉 see full transparency →
-
-🌍 links
+links
 
 - site → [uara.co](https://uara.co)
 - twitter/x → [@FedericoFan](https://x.com/FedericoFan)
