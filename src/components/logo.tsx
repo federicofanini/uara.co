@@ -55,7 +55,7 @@ export function Logo() {
           <p>design fam, pls ship a logo</p>
           <div className="flex items-center gap-2">
             <Link
-              href="/logo"
+              href="https://github.com/federicofanini/uara.co/blob/main/src/components/logo.tsx"
               className="rounded-sm bg-emerald-500/10 px-2 py-1 text-emerald-400 underline underline-offset-4 hover:bg-emerald-500/20"
             >
               open brief / drop a PR
