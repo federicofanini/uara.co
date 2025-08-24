@@ -33,7 +33,8 @@ export default function NotFound() {
         </div>
 
         <p className="text-sm text-muted-foreground italic max-w-md mx-auto">
-          (yes i'm building in public, no i didn't forget about this page —{" "}
+          (yes i&apos;m building in public, no i didn&apos;t forget about this
+          page —{" "}
           <Link
             href="https://x.com/FedericoFan"
             target="_blank"

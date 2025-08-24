@@ -35,8 +35,9 @@ export function Hero() {
           </h2>
           <p className="text-muted-foreground leading-relaxed">
             i invested everything in my medtech startup. to keep the dream alive
-            (and eat), i'm offering simple, beautiful websites on a flat monthly
-            subscription. you get speed and transparency. i fund science.
+            (and eat), i&apos;m offering simple, beautiful websites on a flat
+            monthly subscription. you get speed and transparency. i fund
+            science.
           </p>
         </div>
 
@@ -59,7 +60,7 @@ export function Hero() {
                     </a>
                   </span>
                   <p className="text-xs text-muted-foreground">
-                    (looks like you hired a designer, but you didn't).
+                    (looks like you hired a designer, but you didn&apos;t).
                   </p>
                 </div>
               </div>
@@ -77,7 +78,7 @@ export function Hero() {
                 <div>
                   <p className="text-sm font-medium">forms, seo, analytics</p>
                   <p className="text-xs text-muted-foreground">
-                    → so you can brag about "traffic."
+                    → so you can brag about &quot;traffic.&quot;
                   </p>
                 </div>
               </div>
@@ -86,7 +87,7 @@ export function Hero() {
                 <div>
                   <p className="text-sm font-medium">stripe buttons</p>
                   <p className="text-xs text-muted-foreground">
-                    → because who doesn't want to accidentally get paid?
+                    → because who doesn&apos;t want to accidentally get paid?
                   </p>
                 </div>
               </div>
@@ -94,7 +95,7 @@ export function Hero() {
           </div>
 
           <div className="space-y-6">
-            <h3 className="status-critical">what you don't get:</h3>
+            <h3 className="status-critical">what you don&apos;t get:</h3>
             <div className="space-y-3">
               <div className="flex items-start gap-3">
                 <span className="text-red-400 font-mono text-sm mt-1">×</span>
@@ -103,7 +104,8 @@ export function Hero() {
               <div className="flex items-start gap-3">
                 <span className="text-red-400 font-mono text-sm mt-1">×</span>
                 <p className="text-sm">
-                  that "super tiny feature" that's secretly a saas.
+                  that &quot;super tiny feature&quot; that&apos;s secretly a
+                  saas.
                 </p>
               </div>
               <div className="flex items-start gap-3">

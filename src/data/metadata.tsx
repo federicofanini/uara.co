@@ -1,5 +1,5 @@
 import { Icons } from "@/components/ui/icons";
-import { Twitter, Linkedin, Mail, Globe } from "lucide-react";
+import { Twitter, Linkedin, Mail } from "lucide-react";
 
 export const DATA = {
   // Brand & positioning

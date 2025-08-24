@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 export function Revenues() {
   const [revenue, setRevenue] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(true);
-  const [isAnimating, setIsAnimating] = useState(false);
+  const [, setIsAnimating] = useState(false);
   const router = useRouter();
 
   // Simulate live revenue updates (replace with actual Stripe API call)
