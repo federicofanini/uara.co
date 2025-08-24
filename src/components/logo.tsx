@@ -40,15 +40,12 @@ export function Logo() {
   return (
     <HoverCard openDelay={0} closeDelay={0}>
       <HoverCardTrigger className="block">
-        <Link
-          href="/"
-          className="inline-flex items-center rounded-md border border-dashed border-zinc-700/60 px-2 py-1 font-mono text-xs text-zinc-400 hover:text-zinc-100"
-        >
+        <span className="inline-flex items-center rounded-md border border-dashed border-zinc-700/60 px-2 py-1 font-mono text-xs text-zinc-400 hover:text-zinc-100">
           <span className="font-semibold">uara</span>
           <span className="rounded-sm bg-zinc-900/60 py-0.5 text-[9px] uppercase tracking-widest text-emerald-400">
             .co
           </span>
-        </Link>
+        </span>
       </HoverCardTrigger>
       <HoverCardContent className="mt-4 w-72 p-3">
         <div className="space-y-2 text-xs font-mono text-zinc-400">
