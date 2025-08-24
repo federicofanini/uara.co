@@ -144,49 +144,49 @@ export const DATA = {
       ogImage: "/og/home.png",
     },
     pricing: {
-      title: "Pricing — €790/mo subscription websites | Uara",
+      title: "pricing — €790/mo subscription websites | uara",
       description:
         "One plan. No upsells. Unlimited requests, one active at a time, 2–3 day turnaround. Pause or cancel anytime. Netflix vibes, but I actually ship.",
       ogImage: "/og/pricing.png",
     },
     howItWorks: {
-      title: "How it works — unlimited requests, one active | Uara",
+      title: "how it works — unlimited requests, one active | uara",
       description:
         "Add requests → I pick one → code like a caffeinated raccoon → you approve or roast → we ship. 2–3 day turnaround. Simple, fast, funny.",
       ogImage: "/og/how-it-works.png",
     },
     faq: {
-      title: "FAQ — subscription websites explained (with memes) | Uara",
+      title: "faq — subscription websites explained (with memes) | uara",
       description:
         "Do you do calls? No, I do commits. What’s a task? A 2–3 day deliverable: page, section, form, speed pass. Cancel or pause anytime.",
       ogImage: "/og/faq.png",
     },
     transparency: {
-      title: "Transparency — live revenue & roadmap | Uara",
+      title: "transparency — live revenue & roadmap | uara",
       description:
         "Building in public. Live revenue counter, weekly updates, roadmap, and too much honesty. Every euro funds medtech (and coffee).",
       ogImage: "/og/transparency.png",
     },
     wallOfLove: {
-      title: "Wall of Love — real (and meme) testimonials | Uara",
+      title: "wall of love — real (and meme) testimonials | uara",
       description:
         "Testimonials from clients, friends, and trolls. Real screenshots coming soon. Current review: “stop putting memes in commits.” — my friend.",
       ogImage: "/og/wall-of-love.png",
     },
     request: {
-      title: "Submit a request — start your first task | Uara",
+      title: "submit a request — start your first task | uara",
       description:
         "Queue your first website request. Unlimited backlog, one active at a time. I ship in 2–3 days. No Facebook clones, pls.",
       ogImage: "/og/request.png",
     },
     examples: {
-      title: "Examples — tiny sites, big energy | Uara",
+      title: "examples — tiny sites, big energy | uara",
       description:
         "A handful of clean Shadcn + Next.js builds: landing sprints, speed/SEO pass, forms + Stripe button. Simple, fast, shippable.",
       ogImage: "/og/examples.png",
     },
     changelog: {
-      title: "Changelog — things shipped (and memes) | Uara",
+      title: "changelog — things shipped (and memes) | uara",
       description:
         "Weekly notes of what shipped for clients and for this site. Speed > polish. Transparency > perfection.",
       ogImage: "/og/changelog.png",
@@ -198,7 +198,7 @@ export const DATA = {
     organization: {
       "@context": "https://schema.org",
       "@type": "Organization",
-      name: "Uara",
+      name: "uara",
       url: "https://uara.co",
       logo: "https://uara.co/logo-uara.png",
       sameAs: [
