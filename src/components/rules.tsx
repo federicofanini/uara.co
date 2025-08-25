@@ -233,7 +233,7 @@ export function Rules() {
             <div>
               <p className="text-sm">
                 <span className="font-medium">
-                  don't need updates this month?
+                  don&apos;t need updates this month?
                 </span>{" "}
                 hit pause. no charge while paused, pick up anytime.
               </p>
@@ -259,7 +259,8 @@ export function Rules() {
           <div className="flex items-start gap-2 terminal-prompt">
             <span className="text-green-400">✓</span>
             <span>
-              you get consistent progress without "can we jump on a call?"
+              you get consistent progress without &quot;can we jump on a
+              call?&quot;
             </span>
           </div>
           <div className="flex items-start gap-2 terminal-prompt">

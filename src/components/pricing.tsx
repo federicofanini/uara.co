@@ -1,5 +1,4 @@
 import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
 import {
   Card,
   CardContent,
@@ -60,8 +59,8 @@ export function Pricing() {
                 <span className="text-green-400 font-mono text-sm mt-1">◇</span>
                 <div>
                   <p className="text-sm font-medium">
-                    unlimited requests (but one at a time, I'm just one dude
-                    pls).
+                    unlimited requests (but one at a time, i&apos;m just one
+                    dude pls).
                   </p>
                 </div>
               </div>
@@ -83,7 +82,7 @@ export function Pricing() {
                 <span className="text-green-400 font-mono text-sm mt-1">◇</span>
                 <div>
                   <p className="text-sm font-medium">
-                    full ownership (repos in your org, not my grandma's).
+                    full ownership (repos in your org, not my grandma&apos;s).
                   </p>
                 </div>
               </div>

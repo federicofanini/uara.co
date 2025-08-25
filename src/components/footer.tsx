@@ -4,8 +4,6 @@ import { Logo } from "@/components/logo";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
-import { Suspense } from "react";
-import { GithubStars } from "./github-stars";
 import { Icons } from "./ui/icons";
 import { SubscribeInput } from "./subscribe-input";
 
