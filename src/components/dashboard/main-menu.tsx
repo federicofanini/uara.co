@@ -9,8 +9,7 @@ import { MdHome, MdLock, MdSettings, MdWallet } from "react-icons/md";
 
 const icons = {
   "/dashboard": () => <MdHome />,
-  "/dashboard/transactions": () => <MdWallet size={14} />,
-  "/dashboard/vault": () => <MdLock size={20} />,
+  "/dashboard/requests": () => <MdWallet size={14} />,
   "/dashboard/settings": () => <MdSettings size={20} />,
 } as const;
 
@@ -20,20 +19,17 @@ const items = [
     name: "Home",
   },
   {
-    path: "/dashboard/transactions",
-    name: "Transactions",
+    path: "/dashboard/requests",
+    name: "Requests",
+    children: [{ path: "/dashboard/requests/new", name: "New Request" }],
   },
-  {
-    path: "/dashboard/vault",
-    name: "Vault",
-  },
-
   {
     path: "/dashboard/settings",
     name: "Settings",
     children: [
       { path: "/dashboard/settings", name: "General" },
       { path: "/dashboard/settings/billing", name: "Billing" },
+      { path: "/dashboard/settings/support", name: "Support" },
     ],
   },
 ];
