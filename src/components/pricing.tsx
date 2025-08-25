@@ -1,4 +1,3 @@
-import { Buttoon } from "./buttoon";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import {
@@ -8,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "./ui/card";
+import { GetStartedWaitlist } from "./get-started-waitlist";
 
 export function Pricing() {
   return (
@@ -98,7 +98,9 @@ export function Pricing() {
             </div>
 
             <div className="pt-4">
-              <Buttoon className="w-full">get started (pls)</Buttoon>
+              <GetStartedWaitlist className="w-full">
+                get started (pls)
+              </GetStartedWaitlist>
               <p className="text-xs text-muted-foreground text-center mt-2 font-mono">
                 → flat monthly fee. pause anytime. no drama.
               </p>

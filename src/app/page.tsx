@@ -5,6 +5,7 @@ import { Shipped } from "@/components/shipped";
 import { Pricing } from "@/components/pricing";
 import { Rules } from "@/components/rules";
 import { FAQ } from "@/components/faq";
+import { WallOfLove } from "@/components/wall-of-love";
 
 export default function Home() {
   return (
@@ -13,6 +14,8 @@ export default function Home() {
       <DottedSeparator />
       <Shipped />
       <Pricing />
+      <DottedSeparator />
+      <WallOfLove />
       <DottedSeparator />
       <Rules />
       <DottedSeparator />

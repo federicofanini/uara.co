@@ -6,6 +6,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import Link from "next/link";
 
 export function Menu() {
   const links = [
@@ -31,7 +32,7 @@ export function Menu() {
       >
         {links.map((link) => (
           <DropdownMenuItem key={link.href} className="text-xs">
-            {link.label}
+            <Link href={link.href}>{link.label}</Link>
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
