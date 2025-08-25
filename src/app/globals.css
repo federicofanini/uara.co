@@ -394,3 +394,12 @@
   content: " ☕ sufficient";
   @apply text-green-400 font-mono text-xs;
 }
+
+.bg-dotted {
+  background-image: radial-gradient(
+    circle at 2px 2px,
+    #232323 1px,
+    transparent 0
+  );
+  background-size: 2.5px 2.5px;
+}

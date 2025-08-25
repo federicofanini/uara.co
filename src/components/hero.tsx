@@ -17,8 +17,8 @@ export function Hero() {
           </h1>
 
           <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            i blew all my cash on my startup. now i fund science (and groceries)
-            by building simple shadcn websites. flat monthly fee. pause anytime.
+            i build simple, clean websites with shadcn. flat monthly fee. no
+            drama. pause anytime.
           </p>
         </div>
 
