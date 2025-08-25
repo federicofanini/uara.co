@@ -1,108 +1,39 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { Icons } from "@/components/ui/icons";
+import { ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import {
-  ChartLine,
-  ChevronDown,
-  FileText,
-  Globe,
-  Home,
-  Inbox,
-  Lock,
-  Settings,
-  Users,
-  Wallet,
-} from "lucide-react";
+import { MdHome, MdLock, MdSettings, MdWallet } from "react-icons/md";
 
 const icons = {
-  "/": () => <Home />,
-  "/transactions": () => <Wallet size={20} />,
-  "/invoices": () => <FileText size={20} />,
-  "/tracker": () => <ChartLine size={20} />,
-  "/customers": () => <Users size={20} />,
-  "/vault": () => <Lock size={20} />,
-  "/settings": () => <Settings size={20} />,
-  "/apps": () => <Globe size={20} />,
-  "/inbox": () => <Inbox size={20} />,
+  "/dashboard": () => <MdHome />,
+  "/dashboard/transactions": () => <MdWallet size={14} />,
+  "/dashboard/vault": () => <MdLock size={20} />,
+  "/dashboard/settings": () => <MdSettings size={20} />,
 } as const;
 
 const items = [
   {
-    path: "/",
-    name: "Overview",
+    path: "/dashboard",
+    name: "Home",
   },
   {
-    path: "/inbox",
-    name: "Inbox",
-    children: [{ path: "/inbox/settings", name: "Settings" }],
-  },
-  {
-    path: "/transactions",
+    path: "/dashboard/transactions",
     name: "Transactions",
-    children: [
-      {
-        path: "/transactions/categories",
-        name: "Categories",
-      },
-      {
-        path: "/transactions?step=connect",
-        name: "Connect bank",
-      },
-      {
-        path: "/transactions?step=import&hide=true",
-        name: "Import",
-      },
-      { path: "/transactions?createTransaction=true", name: "Create new" },
-    ],
   },
   {
-    path: "/invoices",
-    name: "Invoices",
-    children: [
-      { path: "/invoices?statuses=paid", name: "Paid" },
-      { path: "/invoices?statuses=unpaid", name: "Unpaid" },
-      { path: "/invoices?statuses=overdue", name: "Overdue" },
-      { path: "/invoices?statuses=draft", name: "Draft" },
-      { path: "/invoices?statuses=scheduled", name: "Scheduled" },
-      { path: "/invoices?type=create", name: "Create new" },
-    ],
-  },
-  {
-    path: "/tracker",
-    name: "Tracker",
-    children: [{ path: "/tracker?create=true", name: "Create new" }],
-  },
-  {
-    path: "/customers",
-    name: "Customers",
-    children: [{ path: "/customers?createCustomer=true", name: "Create new" }],
-  },
-  {
-    path: "/vault",
+    path: "/dashboard/vault",
     name: "Vault",
   },
+
   {
-    path: "/apps",
-    name: "Apps",
-    children: [
-      { path: "/apps", name: "All" },
-      { path: "/apps?tab=installed", name: "Installed" },
-    ],
-  },
-  {
-    path: "/settings",
+    path: "/dashboard/settings",
     name: "Settings",
     children: [
-      { path: "/settings", name: "General" },
-      { path: "/settings/billing", name: "Billing" },
-      { path: "/settings/accounts", name: "Bank Connections" },
-      { path: "/settings/members", name: "Members" },
-      { path: "/settings/notifications", name: "Notifications" },
-      { path: "/settings/developer", name: "Developer" },
+      { path: "/dashboard/settings", name: "General" },
+      { path: "/dashboard/settings/billing", name: "Billing" },
     ],
   },
 ];
@@ -302,8 +233,8 @@ export function MainMenu({ onSelect, isExpanded = false }: Props) {
         <div className="flex flex-col gap-2">
           {items.map((item) => {
             const isActive =
-              (pathname === "/" && item.path === "/") ||
-              (pathname !== "/" && item.path.startsWith(`/${part}`));
+              (pathname === "/dashboard" && item.path === "/dashboard") ||
+              (pathname !== "/dashboard" && item.path.startsWith(`/${part}`));
 
             return (
               <Item
