@@ -1,8 +1,8 @@
-import { getSubscriberCount } from "@/actions/subscribe";
+import { getSubscriberCount } from "@/data/subscribe";
 import { SubscribeInput } from "./subscribe-input";
 import { BellRing } from "lucide-react";
 import { unstable_cache } from "next/cache";
-import { ActionResponse } from "@/actions/types/action-response";
+import { ActionResponse } from "@/data/types/action-response";
 
 // Cache the subscriber count for 1 hour
 const getCachedSubscriberCount = unstable_cache(

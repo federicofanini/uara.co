@@ -3,8 +3,8 @@
 import { createSafeActionClient } from "next-safe-action";
 import { z } from "zod";
 import { revalidatePath, revalidateTag } from "next/cache";
-import type { ActionResponse } from "@/actions/types/action-response";
-import { appErrors } from "@/actions/types/errors";
+import type { ActionResponse } from "@/data/types/action-response";
+import { appErrors } from "@/data/types/errors";
 
 const schema = z.object({
   email: z.string().email(),
