@@ -1,5 +1,6 @@
 import { TransparencyRevenue } from "./transparency-revenue";
 import { TransparencyGoals } from "./transparency-goals";
+import { TransparencyBankBalance } from "./transparency-bank-balance";
 import { DottedSeparator } from "./dotted-separator";
 
 export function Transparency() {
@@ -19,6 +20,11 @@ export function Transparency() {
           → updated weekly. no vanity metrics. no bullshit.
         </p>
       </div>
+
+      {/* Bank Balance Section */}
+      <TransparencyBankBalance />
+
+      <DottedSeparator />
 
       {/* Revenue Section */}
       <TransparencyRevenue />
