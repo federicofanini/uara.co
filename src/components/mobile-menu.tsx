@@ -18,10 +18,6 @@ export function MobileMenu() {
     { href: "/pricing", label: "pricing" },
     { href: "/transparency", label: "transparency" },
     { href: "/how-it-works", label: "how it works" },
-    { href: "/wall-of-love", label: "wall of love" },
-    { href: "/faq", label: "faq" },
-    { href: "/updates", label: "updates" },
-    { href: "/blog", label: "blog" },
     {
       href: "https://github.com/federicofanini/uara.co",
       label: <GithubStars />,
