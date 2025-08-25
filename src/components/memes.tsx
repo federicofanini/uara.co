@@ -37,12 +37,43 @@ export function Memes() {
   ] as const;
 
   const copyPrompt = async (promptIndex: number) => {
+    const text = memePrompts[promptIndex].prompt;
+
     try {
-      await navigator.clipboard.writeText(memePrompts[promptIndex].prompt);
-      setCopiedPrompt(promptIndex);
-      setTimeout(() => setCopiedPrompt(null), 2000);
+      // Try modern clipboard API first (works on most modern browsers)
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+        setCopiedPrompt(promptIndex);
+        setTimeout(() => setCopiedPrompt(null), 2000);
+        return;
+      }
+
+      // Fallback for older browsers and mobile devices
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      textArea.style.position = "fixed";
+      textArea.style.left = "-999999px";
+      textArea.style.top = "-999999px";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+
+      const successful = document.execCommand("copy");
+      document.body.removeChild(textArea);
+
+      if (successful) {
+        setCopiedPrompt(promptIndex);
+        setTimeout(() => setCopiedPrompt(null), 2000);
+      } else {
+        throw new Error("Copy command failed");
+      }
     } catch (err) {
       console.error("Failed to copy:", err);
+      // On mobile, we might not be able to copy programmatically
+      // Show the text in an alert as a last resort
+      if (/Mobi|Android/i.test(navigator.userAgent)) {
+        alert(`Copy this prompt:\n\n${text}`);
+      }
     }
   };
 
@@ -60,20 +91,30 @@ export function Memes() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-background border border-border rounded-lg p-4 text-center space-y-2">
           <div
-            className="h-32 bg-muted rounded flex items-center justify-center relative group cursor-pointer transition-all hover:bg-muted/80"
+            className="h-32 bg-muted rounded flex items-center justify-center relative group cursor-pointer transition-all hover:bg-muted/80 active:bg-muted/60 touch-manipulation"
             onClick={() => copyPrompt(0)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                copyPrompt(0);
+              }
+            }}
           >
             <span className="font-mono text-xs text-muted-foreground group-hover:opacity-30 transition-opacity">
               distracted boyfriend meme
             </span>
 
-            {/* Hover overlay */}
-            <div className="absolute inset-0 bg-background/95 rounded opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-2 space-y-1">
-              <Copy className="size-3 text-green-400" />
+            {/* Hover/Touch overlay */}
+            <div className="absolute inset-0 bg-background/95 rounded opacity-0 group-hover:opacity-100 group-active:opacity-100 transition-opacity flex flex-col items-center justify-center p-2 space-y-1">
+              {copiedPrompt === 0 ? (
+                <Check className="size-4 text-green-400" />
+              ) : (
+                <Copy className="size-4 text-green-400" />
+              )}
               <span className="text-[10px] font-mono text-center text-muted-foreground">
-                {copiedPrompt === 0
-                  ? "copied!"
-                  : "copy prompt to use your tokens"}
+                {copiedPrompt === 0 ? "copied!" : "tap to copy prompt"}
               </span>
             </div>
           </div>
@@ -84,20 +125,30 @@ export function Memes() {
 
         <div className="bg-background border border-border rounded-lg p-4 text-center space-y-2">
           <div
-            className="h-32 bg-muted rounded flex items-center justify-center relative group cursor-pointer transition-all hover:bg-muted/80"
+            className="h-32 bg-muted rounded flex items-center justify-center relative group cursor-pointer transition-all hover:bg-muted/80 active:bg-muted/60 touch-manipulation"
             onClick={() => copyPrompt(1)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                copyPrompt(1);
+              }
+            }}
           >
             <span className="font-mono text-xs text-muted-foreground group-hover:opacity-30 transition-opacity">
               spongebob at 3am
             </span>
 
-            {/* Hover overlay */}
-            <div className="absolute inset-0 bg-background/95 rounded opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-2 space-y-1">
-              <Copy className="size-3 text-green-400" />
+            {/* Hover/Touch overlay */}
+            <div className="absolute inset-0 bg-background/95 rounded opacity-0 group-hover:opacity-100 group-active:opacity-100 transition-opacity flex flex-col items-center justify-center p-2 space-y-1">
+              {copiedPrompt === 1 ? (
+                <Check className="size-4 text-green-400" />
+              ) : (
+                <Copy className="size-4 text-green-400" />
+              )}
               <span className="text-[10px] font-mono text-center text-muted-foreground">
-                {copiedPrompt === 1
-                  ? "copied!"
-                  : "copy prompt to use your tokens"}
+                {copiedPrompt === 1 ? "copied!" : "tap to copy prompt"}
               </span>
             </div>
           </div>
@@ -106,20 +157,30 @@ export function Memes() {
 
         <div className="bg-background border border-border rounded-lg p-4 text-center space-y-2">
           <div
-            className="h-32 bg-muted rounded flex items-center justify-center relative group cursor-pointer transition-all hover:bg-muted/80"
+            className="h-32 bg-muted rounded flex items-center justify-center relative group cursor-pointer transition-all hover:bg-muted/80 active:bg-muted/60 touch-manipulation"
             onClick={() => copyPrompt(2)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                copyPrompt(2);
+              }
+            }}
           >
             <span className="font-mono text-xs text-muted-foreground group-hover:opacity-30 transition-opacity">
               drake meme
             </span>
 
-            {/* Hover overlay */}
-            <div className="absolute inset-0 bg-background/95 rounded opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-2 space-y-1">
-              <Copy className="size-3 text-green-400" />
+            {/* Hover/Touch overlay */}
+            <div className="absolute inset-0 bg-background/95 rounded opacity-0 group-hover:opacity-100 group-active:opacity-100 transition-opacity flex flex-col items-center justify-center p-2 space-y-1">
+              {copiedPrompt === 2 ? (
+                <Check className="size-4 text-green-400" />
+              ) : (
+                <Copy className="size-4 text-green-400" />
+              )}
               <span className="text-[10px] font-mono text-center text-muted-foreground">
-                {copiedPrompt === 2
-                  ? "copied!"
-                  : "copy prompt to use your tokens"}
+                {copiedPrompt === 2 ? "copied!" : "tap to copy prompt"}
               </span>
             </div>
           </div>
