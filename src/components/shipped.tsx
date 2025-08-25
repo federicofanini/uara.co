@@ -1,3 +1,5 @@
+"use client";
+
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { ExternalLink } from "lucide-react";
 
