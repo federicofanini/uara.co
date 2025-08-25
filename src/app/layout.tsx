@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/components/ui/theme-provider";
 import { OpenPanelComponent } from "@openpanel/nextjs";
 import { Header } from "@/components/header";
 import { DATA } from "@/data/metadata";
+import { Footer } from "@/components/footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -106,6 +107,7 @@ export default function RootLayout({
             <Header />
 
             <main className="container mx-auto">{children}</main>
+            <Footer />
           </div>
         </ThemeProvider>
         <OpenPanelComponent
