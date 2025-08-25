@@ -39,7 +39,7 @@ export function Footer({ fullWidth = false }: { fullWidth?: boolean }) {
   ];
 
   return (
-    <footer className="border-t border-border bg-background">
+    <footer className="border-t border-border bg-background px-2 md:px-0">
       <div className={cn("mx-auto py-12", !fullWidth && "container")}>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Logo and Tagline */}
