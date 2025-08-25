@@ -23,7 +23,7 @@ export function Hero() {
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-          <Buttoon>gimme a website before i starve</Buttoon>
+          <Buttoon>gimme a website</Buttoon>
         </div>
       </div>
 
