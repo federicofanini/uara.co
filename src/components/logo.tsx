@@ -29,7 +29,7 @@ rules:
 - 2 versions: full logo + icon/mark
 - deliverables: `.svg` + `.png` + `.ico`
 
-budget: €0 (i’m broke, remember?) — but your design goes live on the repo + site with credits
+budget: $0 (i’m broke, remember?) — but your design goes live on the repo + site with credits
 
 tl;dr: 
 make it clean, funny, usable everywhere.

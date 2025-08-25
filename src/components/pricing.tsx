@@ -35,10 +35,10 @@ export function Pricing() {
               <div className="text-right">
                 <div className="flex items-baseline gap-2">
                   <span className="text-sm text-muted-foreground line-through">
-                    €1490
+                    $1490
                   </span>
                   <span className="text-2xl font-medium text-foreground">
-                    €790
+                    $790
                   </span>
                   <span className="text-sm text-muted-foreground">/mo</span>
                 </div>
@@ -128,7 +128,7 @@ export function Pricing() {
                   Launch Sprint
                 </CardTitle>
                 <span className="text-xl font-medium text-foreground">
-                  €950
+                  $950
                 </span>
               </div>
               <CardDescription>

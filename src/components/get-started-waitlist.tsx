@@ -118,7 +118,7 @@ export function GetStartedWaitlist({
           {/* ETA */}
           <div className="bg-muted/50 border border-border rounded-lg p-3 sm:p-4">
             <p className="text-xs sm:text-sm font-medium text-foreground mb-1 sm:mb-2">
-              eta: early february 2025
+              eta: late august 2025
             </p>
             <p className="text-[10px] sm:text-xs text-muted-foreground font-mono">
               → because good things take time (but not too much time).

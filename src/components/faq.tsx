@@ -4,7 +4,7 @@ export function FAQ() {
       question: "how much does it cost?",
       answer: (
         <div className="space-y-2">
-          <p>flat €790/mo.</p>
+          <p>flat $790/mo.</p>
           <p>unlimited requests, one active at a time.</p>
           <p>cancel or pause whenever.</p>
           <p className="text-teal-300 font-mono text-sm">
