@@ -1,8 +1,6 @@
-import { BellRing } from "lucide-react";
-import { Buttoon } from "./buttoon";
 import { Memes } from "./memes";
 import { Revenues } from "./revenues";
-import { SubscribeInput } from "./subscribe-input";
+import { SubscribeComponent } from "./subscribe-component";
 
 export function Hero() {
   return (
@@ -27,13 +25,7 @@ export function Hero() {
         {/* <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
           <Buttoon>gimme a website</Buttoon>
         </div> */}
-        <div className="flex flex-col gap-4 justify-center items-center">
-          <p className="text-sm text-teal-300 flex items-center gap-2">
-            <BellRing className="size-3.5" />
-            subscribe to know when ready
-          </p>
-          <SubscribeInput />
-        </div>
+        <SubscribeComponent />
       </div>
 
       {/* Why This Exists */}

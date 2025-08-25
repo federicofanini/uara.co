@@ -2,7 +2,7 @@
 
 import { createSafeActionClient } from "next-safe-action";
 import { z } from "zod";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import type { ActionResponse } from "@/actions/types/action-response";
 import { appErrors } from "@/actions/types/errors";
 
@@ -47,6 +47,7 @@ export const subscribeAction = createSafeActionClient()
       }
 
       revalidatePath("/");
+      revalidateTag("subscriber-count");
 
       return {
         success: true,
