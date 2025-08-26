@@ -14,7 +14,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import { useCreateRequest, useCreateBulkRequests } from "@/hooks/use-requests";
 import { toast } from "sonner";
 import {
@@ -23,7 +22,6 @@ import {
   Loader2,
   Plus,
   Trash2,
-  GripVertical,
   Sparkles,
   Zap,
   Edit,
@@ -519,7 +517,7 @@ export function NewRequestForm() {
                 <div>
                   <p className="text-sm font-medium">trust the ai</p>
                   <p className="text-xs text-muted-foreground">
-                    if it suggests splitting, it's probably right.
+                    if it suggests splitting, it&apos;s probably right.
                   </p>
                 </div>
               </div>
