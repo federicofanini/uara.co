@@ -128,7 +128,7 @@ export function BillingSettings({
               No Active Subscription
             </h4>
             <p className="text-sm text-amber-700">
-              You don't have an active subscription yet.
+              You don&apos;t have an active subscription yet.
             </p>
             <Button onClick={handleUpgrade} size="sm">
               <ExternalLink className="mr-2 h-4 w-4" />
@@ -145,7 +145,7 @@ export function BillingSettings({
         <div>
           <h3 className="text-lg font-medium">Plan Features</h3>
           <p className="text-sm text-muted-foreground">
-            What's included in your current plan.
+            What&apos;s included in your current plan.
           </p>
         </div>
 

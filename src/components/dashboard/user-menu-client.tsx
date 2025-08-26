@@ -15,7 +15,12 @@ import { SignOut } from "@/components/dashboard/sign-out";
 import { ThemeSwitch } from "@/components/dashboard/theme-switch";
 
 type Props = {
-  user: any; // Using any for flexibility since Kinde types can vary
+  user: {
+    given_name: string | null;
+    family_name: string | null;
+    email: string | null;
+    picture: string | null;
+  };
   onlySignOut?: boolean;
 };
 

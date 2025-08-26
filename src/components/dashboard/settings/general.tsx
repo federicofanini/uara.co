@@ -20,6 +20,7 @@ import { Trash2 } from "lucide-react";
 
 interface GeneralSettingsProps {
   // No settings currently managed in general tab
+  placeholder?: never;
 }
 
 export function GeneralSettings({}: GeneralSettingsProps) {

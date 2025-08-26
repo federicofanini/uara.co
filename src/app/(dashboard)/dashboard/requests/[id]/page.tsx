@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: RequestDetailPageProps) {
     };
   }
 
-  const request = result.data as any; // Type assertion for metadata generation
+  const request = result.data as { title: string; description: string }; // Type assertion for metadata generation
   return {
     title: `${request.title} - Dashboard`,
     description: request.description.slice(0, 155) + "...",

@@ -2,6 +2,7 @@
 
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { ExternalLink } from "lucide-react";
+import Image from "next/image";
 
 export function Shipped() {
   const shipped = [
@@ -78,7 +79,7 @@ export function Shipped() {
               <CardHeader className="">
                 <div className="flex items-start gap-3">
                   <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-muted flex items-center justify-center flex-shrink-0 group-hover:bg-primary/10 transition-colors">
-                    <img
+                    <Image
                       src={`/work/${project.logoUrl}`}
                       alt={`${project.company} logo`}
                       className="w-6 h-6 sm:w-8 sm:h-8 object-contain"

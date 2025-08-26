@@ -93,7 +93,9 @@ export function NewRequestForm() {
             data.data !== null &&
             "id" in data.data
           ) {
-            router.push(`/dashboard/requests/${(data.data as any).id}`);
+            router.push(
+              `/dashboard/requests/${(data.data as Record<string, unknown>).id}`
+            );
           } else {
             router.push("/dashboard/requests");
           }
@@ -117,7 +119,7 @@ export function NewRequestForm() {
         <div>
           <h1 className="text-2xl font-bold">New Request</h1>
           <p className="text-muted-foreground">
-            Describe what you'd like me to build or improve.
+            Describe what you&apos;d like me to build or improve.
           </p>
         </div>
       </div>

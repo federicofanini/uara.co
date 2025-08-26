@@ -7,12 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { sanitizeObject } from "@/lib/utils";
 import type { ActionResponse } from "@/data/types/action-response";
 import { appErrors } from "@/data/types/errors";
-import {
-  RequestStatus,
-  ActivityType,
-  CommentVisibility,
-  Prisma,
-} from "@prisma/client";
+import { RequestStatus, ActivityType, CommentVisibility } from "@prisma/client";
 import { getCurrentUser, logActivity } from "./request-utils";
 
 // Schemas for validation

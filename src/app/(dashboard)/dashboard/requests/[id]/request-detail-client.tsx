@@ -124,5 +124,5 @@ export default function RequestDetailClientPage({
     notFound();
   }
 
-  return <RequestDetail request={result.data as any} />;
+  return <RequestDetail request={result.data as RequestDetailData} />;
 }

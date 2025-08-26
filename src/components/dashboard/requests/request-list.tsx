@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -144,7 +144,13 @@ function RequestItem({ request }: { request: RequestWithDetails }) {
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-2">
               <Badge
-                variant={statusInfo.color as any}
+                variant={
+                  statusInfo.color as
+                    | "default"
+                    | "secondary"
+                    | "destructive"
+                    | "outline"
+                }
                 className="flex items-center gap-1 text-xs"
               >
                 <StatusIcon className="h-3 w-3" />
@@ -252,8 +258,8 @@ function RequestItem({ request }: { request: RequestWithDetails }) {
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Request</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete "{request.title}"? This action
-              cannot be undone.
+              Are you sure you want to delete &quot;{request.title}&quot;? This
+              action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

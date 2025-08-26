@@ -13,8 +13,8 @@ export default function RequestNotFound() {
               <AlertCircle className="mx-auto h-12 w-12 text-muted-foreground" />
               <h2 className="mt-4 text-lg font-semibold">Request Not Found</h2>
               <p className="mt-2 text-sm text-muted-foreground">
-                The request you're looking for doesn't exist or you don't have
-                permission to view it.
+                The request you&apos;re looking for doesn&apos;t exist or you
+                don&apos;t have permission to view it.
               </p>
               <div className="mt-6">
                 <Link href="/dashboard/requests">

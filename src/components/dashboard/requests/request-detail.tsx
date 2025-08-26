@@ -30,7 +30,6 @@ import {
   ExternalLink,
   MoreVertical,
   Edit,
-  Trash2,
   Play,
   Pause,
   CheckCircle,
@@ -83,7 +82,7 @@ interface RequestDetailData {
   activities: Array<{
     id: string;
     type: ActivityType;
-    meta: any;
+    meta: Record<string, unknown> | null;
     createdAt: Date;
     actor: {
       name: string | null;
@@ -196,7 +195,7 @@ function ActivityItem({
           <span className="font-medium text-foreground">
             {activity.actor?.name || activity.actor?.email || "System"}
           </span>{" "}
-          {getActivityDescription()}
+          {getActivityDescription() as string}
         </p>
         <p className="text-xs text-muted-foreground">
           {formatDate(activity.createdAt)}
@@ -338,7 +337,13 @@ export function RequestDetail({ request }: RequestDetailProps) {
           </Link>
           <div className="flex items-center gap-2">
             <Badge
-              variant={statusInfo.color as any}
+              variant={
+                statusInfo.color as
+                  | "default"
+                  | "secondary"
+                  | "destructive"
+                  | "outline"
+              }
               className="flex items-center gap-1"
             >
               <StatusIcon className="h-3 w-3" />

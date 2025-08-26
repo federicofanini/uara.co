@@ -5,7 +5,7 @@ import { ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { MdHome, MdLock, MdSettings, MdWallet } from "react-icons/md";
+import { MdHome, MdSettings, MdWallet } from "react-icons/md";
 
 const icons = {
   "/dashboard": () => <MdHome />,
