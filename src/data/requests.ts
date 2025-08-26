@@ -3,7 +3,7 @@
 import { unstable_cache } from "next/cache";
 import { appErrors } from "@/data/types/errors";
 import type { ActionResponse } from "@/data/types/action-response";
-import { prisma } from "@/lib/prisma";
+import prisma from "@/lib/prisma";
 import { getCurrentUser } from "./request-utils";
 
 // Internal function to fetch user requests from database
