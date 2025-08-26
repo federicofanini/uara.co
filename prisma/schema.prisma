@@ -17,11 +17,7 @@ datasource db {
  * ===========================
  */
 
-enum UserRole {
-  OWNER
-  ADMIN
-  MEMBER
-}
+// UserRole enum removed - no longer needed without orgs
 
 enum PlanTier {
   STARTER // 1 active slot
@@ -63,7 +59,7 @@ enum CommentVisibility {
 
 /**
  * ===========================
- * Core Identity / Org
+ * Core Identity / User
  * ===========================
  */
 
@@ -79,10 +75,21 @@ model User {
   timeZone String? // e.g. "Europe/Rome"
   locale   String? // e.g. "it-IT"
 
-  memberships     OrgMember[]
+  // Plan and billing info (moved from Org)
+  plan            PlanTier @default(STARTER)
+  concurrentSlots Int      @default(1) // overrideable
+
+  // Stripe linkage (moved from Org)
+  stripeCustomerId String? @unique
+
+  requests        Request[]        @relation("RequestsOwned")
   requestsCreated Request[]        @relation("RequestsCreatedBy")
   comments        RequestComment[]
-  activities      Activity[]       @relation("ActivitiesBy")
+  activities      Activity[]       @relation("ActivitiesOwned")
+  activitiesBy    Activity[]       @relation("ActivitiesBy")
+  subscriptions   Subscription[]
+  payments        Payment[]
+  attachments     Attachment[]
 
   settings UserSettings?
 
@@ -91,73 +98,10 @@ model User {
 
   @@index([email])
   @@index([authProviderId])
-}
-
-model Org {
-  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name            String
-  slug            String   @unique
-  plan            PlanTier @default(STARTER)
-  concurrentSlots Int      @default(1) // overrideable
-
-  // Stripe linkage
-  stripeCustomerId String? @unique
-
-  // relations
-  members          OrgMember[]
-  invites          OrgInvite[]
-  subscriptions    Subscription[]
-  requests         Request[]
-  payments         Payment[]
-  activities       Activity[]
-  attachments      Attachment[]
-  revenueSnapshots RevenueSnapshot[]
-  socialSnapshots  SocialSnapshot[]
-  bankSnapshots    BankSnapshot[]
-  roadmapItems     RoadmapItem[]
-  weeklyUpdates    WeeklyUpdate[]
-  changelog        ChangelogEntry[]
-
-  settings OrgSettings?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
   @@index([stripeCustomerId])
 }
 
-model OrgMember {
-  id     String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  orgId  String   @db.Uuid
-  userId String   @db.Uuid
-  role   UserRole @default(MEMBER)
-
-  org  Org  @relation(fields: [orgId], references: [id], onDelete: Cascade)
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-
-  @@unique([orgId, userId])
-  @@index([userId])
-}
-
-model OrgInvite {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  orgId     String   @db.Uuid
-  email     String
-  role      UserRole @default(MEMBER)
-  token     String   @unique
-  expiresAt DateTime
-
-  org Org @relation(fields: [orgId], references: [id], onDelete: Cascade)
-
-  acceptedBy String?   @db.Uuid
-  acceptedAt DateTime?
-
-  createdAt DateTime @default(now())
-
-  @@index([orgId, email])
-}
+// Org, OrgMember, and OrgInvite models removed - users are now self-contained
 
 /**
  * ===========================
@@ -167,7 +111,7 @@ model OrgInvite {
 
 model Subscription {
   id                   String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  orgId                String             @db.Uuid
+  userId               String             @db.Uuid
   stripeSubscriptionId String             @unique
   stripePriceId        String
   status               SubscriptionStatus
@@ -177,18 +121,18 @@ model Subscription {
   canceledAt           DateTime?
   paused               Boolean            @default(false) // pause_collection mirror
 
-  org Org @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([orgId])
+  @@index([userId])
   @@index([status])
 }
 
 model Payment {
   id              String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  orgId           String    @db.Uuid
+  userId          String    @db.Uuid
   stripeInvoiceId String    @unique
   amountCents     Int
   currency        String    @db.VarChar(3)
@@ -196,11 +140,11 @@ model Payment {
   periodStart     DateTime?
   periodEnd       DateTime?
 
-  org Org @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
 
-  @@index([orgId, paidAt])
+  @@index([userId, paidAt])
 }
 
 /**
@@ -211,7 +155,7 @@ model Payment {
 
 model Request {
   id          String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  orgId       String        @db.Uuid
+  userId      String        @db.Uuid
   title       String
   description String        @db.Text
   status      RequestStatus @default(BACKLOG)
@@ -221,7 +165,7 @@ model Request {
   createdById String?       @db.Uuid
   eta         DateTime? // optional SLA target
 
-  org       Org   @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  user      User  @relation("RequestsOwned", fields: [userId], references: [id], onDelete: Cascade)
   createdBy User? @relation("RequestsCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
 
   comments    RequestComment[]
@@ -230,9 +174,9 @@ model Request {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  // Enforce ONE ACTIVE per org via partial unique index in SQL (see bottom)
+  // Enforce ONE ACTIVE per user via partial unique index in SQL (see bottom)
 
-  @@index([orgId, status])
+  @@index([userId, status])
   @@index([createdById])
 }
 
@@ -254,18 +198,18 @@ model RequestComment {
 
 model Attachment {
   id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  orgId      String  @db.Uuid
+  userId     String  @db.Uuid
   requestId  String? @db.Uuid
   url        String  @db.Text
   kind       String? // "image","doc","link"
   uploadedBy String? @db.Uuid
 
-  org     Org      @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   request Request? @relation(fields: [requestId], references: [id], onDelete: SetNull)
 
   createdAt DateTime @default(now())
 
-  @@index([orgId, requestId])
+  @@index([userId, requestId])
 }
 
 /**
@@ -276,123 +220,21 @@ model Attachment {
 
 model Activity {
   id        String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  orgId     String       @db.Uuid
+  userId    String       @db.Uuid
   requestId String?      @db.Uuid
   type      ActivityType
   meta      Json?        @db.JsonB // diff, from->to, etc.
   actorId   String?      @db.Uuid // null = system/webhook
 
-  org     Org      @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  user    User     @relation("ActivitiesOwned", fields: [userId], references: [id], onDelete: Cascade)
   request Request? @relation(fields: [requestId], references: [id], onDelete: SetNull)
   actor   User?    @relation("ActivitiesBy", fields: [actorId], references: [id], onDelete: SetNull)
 
   createdAt DateTime @default(now())
 
-  @@index([orgId, createdAt])
+  @@index([userId, createdAt])
   @@index([requestId])
   @@index([actorId])
-}
-
-/**
- * ===========================
- * Transparency / Reporting
- * ===========================
- */
-
-model RevenueSnapshot {
-  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  snapshotDate DateTime @default(now())
-  mrrCents     Int      @default(0)
-  allTimeCents Int      @default(0)
-  activeSubs   Int      @default(0)
-
-  orgId String? @db.Uuid // null => global
-  org   Org?    @relation(fields: [orgId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-
-  @@index([snapshotDate])
-  @@index([orgId, snapshotDate])
-}
-
-model SocialSnapshot {
-  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  snapshotDate      DateTime @default(now())
-  xFollowers        Int      @default(0)
-  linkedinFollowers Int      @default(0)
-
-  orgId String? @db.Uuid // keep null (global) unless per-org later
-  org   Org?    @relation(fields: [orgId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-
-  @@index([snapshotDate])
-}
-
-model BankSnapshot {
-  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  snapshotDate DateTime @default(now())
-  balanceCents Int      @default(0)
-  currency     String   @default("EUR") @db.VarChar(3)
-  source       String   @default("midday") // Midday provider id/name
-
-  createdAt DateTime @default(now())
-  Org       Org?     @relation(fields: [orgId], references: [id])
-  orgId     String?  @db.Uuid
-
-  @@index([snapshotDate])
-}
-
-/**
- * ===========================
- * Roadmap / Updates / Changelog
- * ===========================
- */
-
-model RoadmapItem {
-  id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  orgId     String? @db.Uuid // global roadmap if null
-  title     String
-  status    String  @default("todo") // "todo" | "in-progress" | "done"
-  sortIndex Int     @default(0)
-  emoji     String? // "✅", "🔄", "🔜"
-
-  org Org? @relation(fields: [orgId], references: [id], onDelete: SetNull)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model WeeklyUpdate {
-  id     String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  weekOf DateTime // Monday of week
-  title  String
-  body   String   @db.Text
-  public Boolean  @default(true)
-
-  orgId String? @db.Uuid
-  org   Org?    @relation(fields: [orgId], references: [id], onDelete: SetNull)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([weekOf, orgId])
-  @@index([weekOf])
-}
-
-model ChangelogEntry {
-  id     String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  date   DateTime @default(now())
-  title  String
-  body   String   @db.Text
-  public Boolean  @default(true)
-
-  orgId String? @db.Uuid
-  org   Org?    @relation(fields: [orgId], references: [id], onDelete: SetNull)
-
-  createdAt DateTime @default(now())
-
-  @@index([date])
 }
 
 /**
@@ -401,16 +243,7 @@ model ChangelogEntry {
  * ===========================
  */
 
-model OrgSettings {
-  id                  String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  orgId               String  @unique @db.Uuid
-  preferredComms      String? // "email" | "slack" | etc.
-  slackChannel        String?
-  slotOverride        Int? // override concurrent slots if set
-  allowPublicExamples Boolean @default(true)
-
-  org Org @relation(fields: [orgId], references: [id], onDelete: Cascade)
-}
+// OrgSettings model removed - settings moved to UserSettings
 
 model UserSettings {
   id              String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
@@ -418,6 +251,12 @@ model UserSettings {
   notifyOnStatus  Boolean @default(true)
   notifyOnComment Boolean @default(true)
   marketingEmails Boolean @default(false)
+
+  // Settings moved from OrgSettings
+  preferredComms      String? // "email" | "slack" | etc.
+  slackChannel        String?
+  slotOverride        Int? // override concurrent slots if set
+  allowPublicExamples Boolean @default(true)
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
