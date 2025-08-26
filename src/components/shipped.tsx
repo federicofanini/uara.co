@@ -80,7 +80,7 @@ export function Shipped() {
                 <div className="flex items-start gap-3">
                   <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-muted flex items-center justify-center flex-shrink-0 group-hover:bg-primary/10 transition-colors">
                     <Image
-                      src={`/work/${project.logoUrl}`}
+                      src={`/work${project.logoUrl}`}
                       alt={`${project.company} logo`}
                       width={32}
                       height={32}

@@ -14,7 +14,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { useCreateRequest, useCreateBulkRequests } from "@/hooks/use-requests";
+import { Separator } from "@/components/ui/separator";
+import {
+  useCreateRequest,
+  useCreateBulkRequests,
+  useRequests,
+} from "@/hooks/use-requests";
 import { toast } from "sonner";
 import {
   ArrowLeft,
@@ -22,9 +27,11 @@ import {
   Loader2,
   Plus,
   Trash2,
-  Sparkles,
   Zap,
   Edit,
+  Lightbulb,
+  RefreshCw,
+  Eye,
 } from "lucide-react";
 import Link from "next/link";
 import { type RequestSplitResult } from "@/packages/ai";
@@ -89,9 +96,20 @@ export function NewRequestForm() {
     useState<RequestSplitResult | null>(null);
   const [subtasks, setSubtasks] = useState<EditableSubtask[]>([]);
   const [showSubtasks, setShowSubtasks] = useState(false);
+  const [showCreatedRequests, setShowCreatedRequests] = useState(false);
 
   const createRequestMutation = useCreateRequest();
   const createBulkRequestsMutation = useCreateBulkRequests();
+
+  // Fetch requests data to show updated backlog
+  const {
+    data: requestsResult,
+    refetch: refetchRequests,
+    isRefetching,
+  } = useRequests();
+  const requests = Array.isArray(requestsResult?.data)
+    ? requestsResult.data
+    : [];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -229,8 +247,11 @@ export function NewRequestForm() {
             ? data.data.length
             : subtasks.length;
           toast.success(`queued ${count} tasks. let's ship.`);
-          console.log("Bulk creation successful, redirecting to dashboard");
-          router.push("/dashboard/requests");
+          console.log("Bulk creation successful, showing updated backlog");
+
+          // Show the created requests section and refetch data
+          setShowCreatedRequests(true);
+          refetchRequests();
         },
         onError: (error) => {
           console.error("Bulk creation failed:", error);
@@ -264,12 +285,26 @@ export function NewRequestForm() {
     setAnalysisResult(null);
     setSubtasks([]);
     setShowSubtasks(false);
+    setShowCreatedRequests(false);
+  };
+
+  const handleCreateAnother = () => {
+    // Reset the form for creating another request
+    setTitle("");
+    setDescription("");
+    setPriority(3);
+    resetAnalysis();
   };
 
   const selectedPriority = priorityOptions.find((p) => p.value === priority);
 
+  // Filter requests to show only BACKLOG status
+  const backlogRequests = requests.filter(
+    (request: any) => request.status === "BACKLOG"
+  );
+
   return (
-    <div className=" flex flex-col">
+    <div className="flex flex-col">
       {/* Header */}
       <div className="w-full flex flex-col sm:flex-row sm:items-center gap-4 mb-6 sm:mb-8">
         <div>
@@ -289,273 +324,388 @@ export function NewRequestForm() {
       </div>
 
       <div className="w-full space-y-8">
-        {/* Main Form */}
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Original Request */}
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="title" className="text-base font-medium">
-                Title <span className="text-destructive">*</span>
-              </Label>
-              <Input
-                id="title"
-                placeholder="e.g., Create a hero section with signup form"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                maxLength={255}
-                required
-                className="text-base"
-                disabled={showSubtasks}
-              />
-              <p className="text-xs text-muted-foreground">
-                {title.length}/255 characters
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="description" className="text-base font-medium">
-                Description <span className="text-destructive">*</span>
-              </Label>
-              <Textarea
-                id="description"
-                placeholder="Describe your request in detail. Include any specific requirements, design preferences, or functionality you need..."
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                rows={6}
-                required
-                className="text-base"
-                disabled={showSubtasks}
-              />
-              <p className="text-xs text-muted-foreground">
-                be as specific as possible. this helps me deliver exactly what
-                you need.
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="priority" className="text-base font-medium">
-                Priority
-              </Label>
-              <Select
-                value={priority.toString()}
-                onValueChange={(value) => setPriority(parseInt(value))}
-                disabled={showSubtasks}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {priorityOptions.map((option) => (
-                    <SelectItem
-                      key={option.value}
-                      value={option.value.toString()}
-                    >
-                      <div className="flex items-center gap-2">
-                        <span>{option.label}</span>
-                        <span className="text-xs text-muted-foreground">
-                          - {option.description}
-                        </span>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {selectedPriority && (
-                <p className="text-xs text-muted-foreground">
-                  {selectedPriority.description}
-                </p>
-              )}
-            </div>
-          </div>
-
-          {/* AI Split Results */}
-          {showSubtasks && (
-            <div className="space-y-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Sparkles className="h-5 w-5 text-teal-400" />
-                  <h2 className="text-lg font-medium">
-                    ai split this into {subtasks.length} smaller tasks
-                  </h2>
-                </div>
-                <Button variant="ghost" size="sm" onClick={resetAnalysis}>
-                  start over
+        {/* Show Created Requests Success State */}
+        {showCreatedRequests && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <CheckCircle className="h-5 w-5 text-green-500" />
+                <h2 className="text-lg font-medium">
+                  Successfully created {subtasks.length} tasks!
+                </h2>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => refetchRequests()}
+                  disabled={isRefetching}
+                >
+                  <RefreshCw
+                    className={`mr-2 h-4 w-4 ${
+                      isRefetching ? "animate-spin" : ""
+                    }`}
+                  />
+                  Refresh
                 </Button>
+                <Link href="/dashboard/requests">
+                  <Button size="sm">
+                    <Eye className="mr-2 h-4 w-4" />
+                    View All Requests
+                  </Button>
+                </Link>
+              </div>
+            </div>
+
+            {/* Show Updated Backlog */}
+            <div className="p-4 rounded-lg border border-border bg-card space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-base font-medium">
+                  Your Backlog ({backlogRequests.length} items)
+                </h3>
+                <Badge variant="outline" className="text-xs">
+                  Live Updated
+                </Badge>
               </div>
 
-              {analysisResult && (
-                <div className="p-4 rounded-lg bg-muted/50 border border-border">
-                  <p className="text-sm text-muted-foreground">
-                    {analysisResult.suggestion}
+              {isRefetching ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                  <span className="ml-2 text-sm text-muted-foreground">
+                    Updating...
+                  </span>
+                </div>
+              ) : backlogRequests.length > 0 ? (
+                <div className="space-y-2 max-h-60 overflow-y-auto">
+                  {backlogRequests
+                    .slice(0, 10)
+                    .map((request: any, index: number) => (
+                      <div
+                        key={request.id}
+                        className="flex items-center justify-between p-3 rounded border border-border bg-background/50"
+                      >
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate">
+                            {request.title}
+                          </p>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {request.description}
+                          </p>
+                        </div>
+                        <Badge variant="secondary" className="ml-2 text-xs">
+                          #{index + 1}
+                        </Badge>
+                      </div>
+                    ))}
+                  {backlogRequests.length > 10 && (
+                    <p className="text-center text-xs text-muted-foreground py-2">
+                      +{backlogRequests.length - 10} more items...
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <div className="text-center py-8 text-muted-foreground">
+                  <p className="text-sm">No items in backlog</p>
+                </div>
+              )}
+            </div>
+
+            <div className="flex justify-center gap-4">
+              <Button onClick={handleCreateAnother} variant="outline">
+                <Plus className="mr-2 h-4 w-4" />
+                Create Another Request
+              </Button>
+              <Link href="/dashboard/requests">
+                <Button>Go to Dashboard</Button>
+              </Link>
+            </div>
+
+            <Separator />
+          </div>
+        )}
+
+        {/* Main Form - Hide when showing created requests */}
+        {!showCreatedRequests && (
+          <>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Original Request */}
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="title" className="text-base font-medium">
+                    Title <span className="text-destructive">*</span>
+                  </Label>
+                  <Input
+                    id="title"
+                    placeholder="e.g., Create a hero section with signup form"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    maxLength={255}
+                    required
+                    className="text-base"
+                    disabled={showSubtasks}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    {title.length}/255 characters
                   </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="description"
+                    className="text-base font-medium"
+                  >
+                    Description <span className="text-destructive">*</span>
+                  </Label>
+                  <Textarea
+                    id="description"
+                    placeholder="Describe your request in detail. Include any specific requirements, design preferences, or functionality you need..."
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    rows={6}
+                    required
+                    className="text-base"
+                    disabled={showSubtasks}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    be as specific as possible. this helps me deliver exactly
+                    what you need.
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="priority" className="text-base font-medium">
+                    Priority
+                  </Label>
+                  <Select
+                    value={priority.toString()}
+                    onValueChange={(value) => setPriority(parseInt(value))}
+                    disabled={showSubtasks}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {priorityOptions.map((option) => (
+                        <SelectItem
+                          key={option.value}
+                          value={option.value.toString()}
+                        >
+                          <div className="flex items-center gap-2">
+                            <span>{option.label}</span>
+                            <span className="text-xs text-muted-foreground">
+                              - {option.description}
+                            </span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {selectedPriority && (
+                    <p className="text-xs text-muted-foreground">
+                      {selectedPriority.description}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* AI Split Results */}
+              {showSubtasks && (
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Lightbulb className="h-5 w-5 text-teal-400" />
+                      <h2 className="text-lg font-medium">
+                        ai split this into {subtasks.length} smaller tasks
+                      </h2>
+                    </div>
+                    <Button variant="ghost" size="sm" onClick={resetAnalysis}>
+                      start over
+                    </Button>
+                  </div>
+
+                  {analysisResult && (
+                    <div className="p-4 rounded-lg bg-muted/50 border border-border">
+                      <p className="text-sm text-muted-foreground">
+                        {analysisResult.suggestion}
+                      </p>
+                    </div>
+                  )}
+
+                  <div className="space-y-4">
+                    {subtasks.map((subtask, index) => (
+                      <SubtaskCard
+                        key={subtask.id}
+                        subtask={subtask}
+                        index={index}
+                        onUpdate={updateSubtask}
+                        onDelete={deleteSubtask}
+                      />
+                    ))}
+                  </div>
+
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={addSubtask}
+                    className="w-full"
+                  >
+                    <Plus className="mr-2 h-4 w-4" />
+                    add another task
+                  </Button>
                 </div>
               )}
 
-              <div className="space-y-4">
-                {subtasks.map((subtask, index) => (
-                  <SubtaskCard
-                    key={subtask.id}
-                    subtask={subtask}
-                    index={index}
-                    onUpdate={updateSubtask}
-                    onDelete={deleteSubtask}
-                  />
+              {/* Submit Button */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-center gap-4 pt-6">
+                {!showSubtasks ? (
+                  <div className="text-center space-y-4">
+                    <Button
+                      type="submit"
+                      disabled={isAnalyzing || createRequestMutation.isPending}
+                      size="lg"
+                      className="text-base px-8"
+                    >
+                      {isAnalyzing ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          analyzing...
+                        </>
+                      ) : createRequestMutation.isPending ? (
+                        "creating..."
+                      ) : (
+                        <>
+                          <Zap className="mr-2 h-4 w-4" />
+                          analyze & create
+                        </>
+                      )}
+                    </Button>
+                    <p className="text-xs text-muted-foreground">
+                      ai will check if this needs to be split into smaller tasks
+                    </p>
+                  </div>
+                ) : (
+                  <div className="text-center space-y-4">
+                    <Button
+                      type="submit"
+                      disabled={
+                        createBulkRequestsMutation.isPending ||
+                        subtasks.length === 0
+                      }
+                      size="lg"
+                      className="text-base px-8"
+                    >
+                      {createBulkRequestsMutation.isPending ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          creating {subtasks.length} tasks...
+                        </>
+                      ) : (
+                        <>
+                          <CheckCircle className="mr-2 h-4 w-4" />
+                          create {subtasks.length} tasks
+                        </>
+                      )}
+                    </Button>
+                    <p className="text-xs text-muted-foreground">
+                      only 1 task will be active at a time. the rest will wait
+                      in your backlog.
+                    </p>
+                  </div>
+                )}
+              </div>
+            </form>
+
+            {/* Tips Section */}
+            <div className="w-full space-y-6 pt-8 border-t border-border">
+              <h2 className="text-lg font-medium text-foreground">
+                tips for better requests
+              </h2>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3">
+                    <span className="text-teal-400 font-mono text-sm mt-1">
+                      ◇
+                    </span>
+                    <div>
+                      <p className="text-sm font-medium">be specific</p>
+                      <p className="text-xs text-muted-foreground">
+                        include details about functionality, design, and any
+                        requirements.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <span className="text-teal-400 font-mono text-sm mt-1">
+                      ◇
+                    </span>
+                    <div>
+                      <p className="text-sm font-medium">share references</p>
+                      <p className="text-xs text-muted-foreground">
+                        link to examples, mockups, or similar websites you like.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3">
+                    <span className="text-teal-400 font-mono text-sm mt-1">
+                      ◇
+                    </span>
+                    <div>
+                      <p className="text-sm font-medium">think scope</p>
+                      <p className="text-xs text-muted-foreground">
+                        each request should be completable in 2-3 days.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <span className="text-teal-400 font-mono text-sm mt-1">
+                      ◇
+                    </span>
+                    <div>
+                      <p className="text-sm font-medium">trust the ai</p>
+                      <p className="text-xs text-muted-foreground">
+                        if it suggests splitting, it&apos;s probably right.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Examples */}
+            <div className="w-full space-y-6">
+              <h2 className="text-lg font-medium text-foreground">
+                example requests
+              </h2>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                {requestExamples.map((category) => (
+                  <div key={category.category} className="space-y-3">
+                    <Badge variant="outline" className="text-xs">
+                      {category.category}
+                    </Badge>
+                    <div className="space-y-2">
+                      {category.examples.map((example, index) => (
+                        <div
+                          key={index}
+                          className="text-xs text-muted-foreground cursor-pointer hover:text-foreground transition-colors p-2 rounded hover:bg-muted/50 border border-transparent hover:border-border"
+                          onClick={() => {
+                            if (!title && !showSubtasks) setTitle(example);
+                          }}
+                        >
+                          {example}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 ))}
               </div>
-
-              <Button
-                type="button"
-                variant="outline"
-                onClick={addSubtask}
-                className="w-full"
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                add another task
-              </Button>
+              <p className="text-xs text-muted-foreground text-center">
+                💡 click any example to use it as your title
+              </p>
             </div>
-          )}
-
-          {/* Submit Button */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-center gap-4 pt-6">
-            {!showSubtasks ? (
-              <div className="text-center space-y-4">
-                <Button
-                  type="submit"
-                  disabled={isAnalyzing || createRequestMutation.isPending}
-                  size="lg"
-                  className="text-base px-8"
-                >
-                  {isAnalyzing ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      analyzing...
-                    </>
-                  ) : createRequestMutation.isPending ? (
-                    "creating..."
-                  ) : (
-                    <>
-                      <Zap className="mr-2 h-4 w-4" />
-                      analyze & create
-                    </>
-                  )}
-                </Button>
-                <p className="text-xs text-muted-foreground">
-                  ai will check if this needs to be split into smaller tasks
-                </p>
-              </div>
-            ) : (
-              <div className="text-center space-y-4">
-                <Button
-                  type="submit"
-                  disabled={
-                    createBulkRequestsMutation.isPending ||
-                    subtasks.length === 0
-                  }
-                  size="lg"
-                  className="text-base px-8"
-                >
-                  {createBulkRequestsMutation.isPending ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      creating {subtasks.length} tasks...
-                    </>
-                  ) : (
-                    <>
-                      <CheckCircle className="mr-2 h-4 w-4" />
-                      create {subtasks.length} tasks
-                    </>
-                  )}
-                </Button>
-                <p className="text-xs text-muted-foreground">
-                  only 1 task will be active at a time. the rest will wait in
-                  your backlog.
-                </p>
-              </div>
-            )}
-          </div>
-        </form>
-
-        {/* Tips Section */}
-        <div className="w-full space-y-6 pt-8 border-t border-border">
-          <h2 className="text-lg font-medium text-foreground">
-            tips for better requests
-          </h2>
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="space-y-3">
-              <div className="flex items-start gap-3">
-                <span className="text-teal-400 font-mono text-sm mt-1">◇</span>
-                <div>
-                  <p className="text-sm font-medium">be specific</p>
-                  <p className="text-xs text-muted-foreground">
-                    include details about functionality, design, and any
-                    requirements.
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <span className="text-teal-400 font-mono text-sm mt-1">◇</span>
-                <div>
-                  <p className="text-sm font-medium">share references</p>
-                  <p className="text-xs text-muted-foreground">
-                    link to examples, mockups, or similar websites you like.
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div className="space-y-3">
-              <div className="flex items-start gap-3">
-                <span className="text-teal-400 font-mono text-sm mt-1">◇</span>
-                <div>
-                  <p className="text-sm font-medium">think scope</p>
-                  <p className="text-xs text-muted-foreground">
-                    each request should be completable in 2-3 days.
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <span className="text-teal-400 font-mono text-sm mt-1">◇</span>
-                <div>
-                  <p className="text-sm font-medium">trust the ai</p>
-                  <p className="text-xs text-muted-foreground">
-                    if it suggests splitting, it&apos;s probably right.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Examples */}
-        <div className="w-full space-y-6">
-          <h2 className="text-lg font-medium text-foreground">
-            example requests
-          </h2>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-            {requestExamples.map((category) => (
-              <div key={category.category} className="space-y-3">
-                <Badge variant="outline" className="text-xs">
-                  {category.category}
-                </Badge>
-                <div className="space-y-2">
-                  {category.examples.map((example, index) => (
-                    <div
-                      key={index}
-                      className="text-xs text-muted-foreground cursor-pointer hover:text-foreground transition-colors p-2 rounded hover:bg-muted/50 border border-transparent hover:border-border"
-                      onClick={() => {
-                        if (!title && !showSubtasks) setTitle(example);
-                      }}
-                    >
-                      {example}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-          <p className="text-xs text-muted-foreground text-center">
-            💡 click any example to use it as your title
-          </p>
-        </div>
+          </>
+        )}
       </div>
     </div>
   );

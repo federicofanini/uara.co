@@ -5,6 +5,7 @@ import { Icons } from "@/components/ui/icons";
 import Link from "next/link";
 import { useState } from "react";
 import { MainMenu } from "@/components/dashboard/main-menu";
+import Image from "next/image";
 
 export function Sidebar() {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -29,7 +30,13 @@ export function Sidebar() {
           href="/dashboard"
           className="absolute left-[22px] transition-none"
         >
-          <Icons.midday className="w-7 h-7" />
+          <Image
+            src="/logo-uara.svg"
+            alt="logo"
+            width={32}
+            height={32}
+            className="w-7 h-7"
+          />
         </Link>
       </div>
 
