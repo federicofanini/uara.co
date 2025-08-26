@@ -1,0 +1,8 @@
+---
+alwaysApply: true
+---
+
+- Implement Row Level Security (RLS) to protect sensitive data.
+- Use Supabase's built-in authentication for secure user management.
+- Regularly monitor and optimize database performance.
+- Utilize Supabase functions for server-side logic when necessary.
