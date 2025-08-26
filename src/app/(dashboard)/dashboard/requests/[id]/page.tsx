@@ -8,9 +8,9 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 interface RequestDetailPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 function RequestDetailLoading() {
@@ -104,18 +104,23 @@ async function RequestDetailContent({ id }: { id: string }) {
   return <RequestDetail request={result.data as any} />;
 }
 
-export default function RequestDetailPage({ params }: RequestDetailPageProps) {
+export default async function RequestDetailPage({
+  params,
+}: RequestDetailPageProps) {
+  const { id } = await params;
+
   return (
     <div className="w-full px-4 md:px-8 py-4">
       <Suspense fallback={<RequestDetailLoading />}>
-        <RequestDetailContent id={params.id} />
+        <RequestDetailContent id={id} />
       </Suspense>
     </div>
   );
 }
 
 export async function generateMetadata({ params }: RequestDetailPageProps) {
-  const result = await getRequest(params.id);
+  const { id } = await params;
+  const result = await getRequest(id);
 
   if (!result.success || !result.data) {
     return {

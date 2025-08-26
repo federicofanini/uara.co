@@ -5,6 +5,7 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { prisma } from "@/lib/prisma";
+import { sanitizeObject } from "@/lib/utils";
 import type { ActionResponse } from "@/data/types/action-response";
 import { appErrors } from "@/data/types/errors";
 import {
@@ -48,7 +49,7 @@ const addAttachmentSchema = z.object({
   kind: z.string().optional(),
 });
 
-// Helper function to get current user
+// Helper function to get current user with retry logic
 async function getCurrentUser() {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
@@ -57,15 +58,37 @@ async function getCurrentUser() {
     throw new Error(appErrors.UNAUTHORIZED);
   }
 
-  const dbUser = await prisma.user.findUnique({
-    where: { authProviderId: user.id },
-  });
+  // Retry logic for database operations
+  const maxRetries = 3;
+  let lastError: Error;
 
-  if (!dbUser) {
-    throw new Error(appErrors.NOT_FOUND);
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const dbUser = await prisma.user.findUnique({
+        where: { authProviderId: user.id },
+      });
+
+      if (!dbUser) {
+        throw new Error(appErrors.NOT_FOUND);
+      }
+
+      return dbUser;
+    } catch (error) {
+      lastError = error as Error;
+
+      // If it's the last attempt, throw the error
+      if (attempt === maxRetries) {
+        throw lastError;
+      }
+
+      // Wait before retrying (exponential backoff)
+      await new Promise((resolve) =>
+        setTimeout(resolve, Math.pow(2, attempt) * 100)
+      );
+    }
   }
 
-  return dbUser;
+  throw lastError!;
 }
 
 // Helper function to log activity
@@ -87,107 +110,153 @@ async function logActivity(
   });
 }
 
-// Get all user requests
+// Get all user requests with retry logic
 export async function getUserRequests(): Promise<ActionResponse> {
-  try {
-    const user = await getCurrentUser();
+  const maxRetries = 3;
+  let lastError: Error;
 
-    const requests = await prisma.request.findMany({
-      where: { userId: user.id },
-      include: {
-        comments: {
-          include: {
-            author: {
-              select: { name: true, email: true, avatarUrl: true },
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const user = await getCurrentUser();
+
+      const requests = await prisma.request.findMany({
+        where: { userId: user.id },
+        include: {
+          comments: {
+            include: {
+              author: {
+                select: { name: true, email: true, avatarUrl: true },
+              },
+            },
+            orderBy: { createdAt: "desc" },
+            take: 3, // Only latest 3 comments for list view
+          },
+          attachments: true,
+          _count: {
+            select: {
+              comments: true,
+              attachments: true,
             },
           },
-          orderBy: { createdAt: "desc" },
-          take: 3, // Only latest 3 comments for list view
         },
-        attachments: true,
-        _count: {
-          select: {
-            comments: true,
-            attachments: true,
-          },
-        },
-      },
-      orderBy: [
-        { status: "asc" }, // ACTIVE first, then BACKLOG, etc.
-        { priority: "asc" },
-        { orderIndex: "asc" },
-        { createdAt: "desc" },
-      ],
-    });
+        orderBy: [
+          { status: "asc" }, // ACTIVE first, then BACKLOG, etc.
+          { priority: "asc" },
+          { orderIndex: "asc" },
+          { createdAt: "desc" },
+        ],
+      });
 
-    return {
-      success: true,
-      data: requests,
-    };
-  } catch (error) {
-    console.error("Get user requests error:", error);
-    return {
-      success: false,
-      error:
-        error instanceof Error ? error.message : appErrors.UNEXPECTED_ERROR,
-    };
+      return {
+        success: true,
+        data: requests,
+      };
+    } catch (error) {
+      lastError = error as Error;
+      console.error(`Get user requests error (attempt ${attempt}):`, error);
+
+      // If it's the last attempt, return the error
+      if (attempt === maxRetries) {
+        return {
+          success: false,
+          error:
+            error instanceof Error ? error.message : appErrors.UNEXPECTED_ERROR,
+        };
+      }
+
+      // Wait before retrying (exponential backoff)
+      await new Promise((resolve) =>
+        setTimeout(resolve, Math.pow(2, attempt) * 100)
+      );
+    }
   }
+
+  return {
+    success: false,
+    error:
+      lastError! instanceof Error
+        ? lastError!.message
+        : appErrors.UNEXPECTED_ERROR,
+  };
 }
 
-// Get single request with full details
+// Get single request with full details and retry logic
 export async function getRequest(id: string): Promise<ActionResponse> {
-  try {
-    const user = await getCurrentUser();
+  const maxRetries = 3;
+  let lastError: Error;
 
-    const request = await prisma.request.findFirst({
-      where: {
-        id,
-        userId: user.id, // Ensure user owns the request
-      },
-      include: {
-        comments: {
-          include: {
-            author: {
-              select: { name: true, email: true, avatarUrl: true },
-            },
-          },
-          orderBy: { createdAt: "asc" },
-        },
-        attachments: true,
-        activities: {
-          include: {
-            actor: {
-              select: { name: true, email: true, avatarUrl: true },
-            },
-          },
-          orderBy: { createdAt: "desc" },
-          take: 20,
-        },
-        createdBy: {
-          select: { name: true, email: true, avatarUrl: true },
-        },
-      },
-    });
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      const user = await getCurrentUser();
 
-    if (!request) {
+      const request = await prisma.request.findFirst({
+        where: {
+          id,
+          userId: user.id, // Ensure user owns the request
+        },
+        include: {
+          comments: {
+            include: {
+              author: {
+                select: { name: true, email: true, avatarUrl: true },
+              },
+            },
+            orderBy: { createdAt: "asc" },
+          },
+          attachments: true,
+          activities: {
+            include: {
+              actor: {
+                select: { name: true, email: true, avatarUrl: true },
+              },
+            },
+            orderBy: { createdAt: "desc" },
+            take: 20,
+          },
+          createdBy: {
+            select: { name: true, email: true, avatarUrl: true },
+          },
+        },
+      });
+
+      if (!request) {
+        return {
+          success: false,
+          error: appErrors.NOT_FOUND,
+        };
+      }
+
       return {
-        success: false,
-        error: appErrors.NOT_FOUND,
+        success: true,
+        data: request,
       };
-    }
+    } catch (error) {
+      lastError = error as Error;
+      console.error(`Get request error (attempt ${attempt}):`, error);
 
-    return {
-      success: true,
-      data: request,
-    };
-  } catch (error) {
-    console.error("Get request error:", error);
-    return {
-      success: false,
-      error:
-        error instanceof Error ? error.message : appErrors.UNEXPECTED_ERROR,
-    };
+      // If it's the last attempt, return the error
+      if (attempt === maxRetries) {
+        return {
+          success: false,
+          error:
+            error instanceof Error ? error.message : appErrors.UNEXPECTED_ERROR,
+        };
+      }
+
+      // Wait before retrying (exponential backoff)
+      await new Promise((resolve) =>
+        setTimeout(resolve, Math.pow(2, attempt) * 100)
+      );
+    }
   }
+
+  return {
+    success: false,
+    error:
+      lastError! instanceof Error
+        ? lastError!.message
+        : appErrors.UNEXPECTED_ERROR,
+  };
 }
 
 // Create new request
@@ -224,9 +293,11 @@ export const createRequest = createSafeActionClient()
 
       const newOrderIndex = (lastBacklogItem?.orderIndex || 0) + 1;
 
+      const sanitizedData = sanitizeObject(input.parsedInput);
+
       const request = await prisma.request.create({
         data: {
-          ...input.parsedInput,
+          ...sanitizedData,
           userId: user.id,
           createdById: user.id,
           status: RequestStatus.BACKLOG,
@@ -287,10 +358,11 @@ export const updateRequest = createSafeActionClient()
       }
 
       const { id: requestId, ...updateData } = input.parsedInput;
+      const sanitizedUpdateData = sanitizeObject(updateData);
 
       const updatedRequest = await prisma.request.update({
         where: { id: requestId },
-        data: updateData,
+        data: sanitizedUpdateData,
         include: {
           comments: true,
           attachments: true,
@@ -451,9 +523,11 @@ export const addComment = createSafeActionClient()
         };
       }
 
+      const sanitizedCommentData = sanitizeObject(input.parsedInput);
+
       const comment = await prisma.requestComment.create({
         data: {
-          ...input.parsedInput,
+          ...sanitizedCommentData,
           authorId: user.id,
         },
         include: {

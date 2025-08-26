@@ -11,20 +11,45 @@ export default async function DashboardSettingsPage() {
     redirect("/api/auth/login");
   }
 
-  // Fetch user data with billing information
-  const dbUser = await prisma.user.findUnique({
-    where: { authProviderId: user.id },
-    include: {
-      subscriptions: {
-        orderBy: { createdAt: "desc" },
-        take: 1,
-      },
-      payments: {
-        orderBy: { paidAt: "desc" },
-        take: 5,
-      },
-    },
-  });
+  // Fetch user data with billing information with retry logic
+  const maxRetries = 3;
+  let dbUser;
+  let lastError: Error;
+
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      dbUser = await prisma.user.findUnique({
+        where: { authProviderId: user.id },
+        include: {
+          subscriptions: {
+            orderBy: { createdAt: "desc" },
+            take: 1,
+          },
+          payments: {
+            orderBy: { paidAt: "desc" },
+            take: 5,
+          },
+        },
+      });
+      break; // Success, exit the retry loop
+    } catch (error) {
+      lastError = error as Error;
+      console.error(
+        `Settings page database error (attempt ${attempt}):`,
+        error
+      );
+
+      // If it's the last attempt, throw the error
+      if (attempt === maxRetries) {
+        throw lastError;
+      }
+
+      // Wait before retrying (exponential backoff)
+      await new Promise((resolve) =>
+        setTimeout(resolve, Math.pow(2, attempt) * 100)
+      );
+    }
+  }
 
   if (!dbUser) {
     redirect("/api/auth/creation");
