@@ -13,17 +13,20 @@ export async function GET(request: NextRequest) {
 
     // Check if user exists
     const existingUser = await prisma.user.findUnique({
-      where: { email: user.email },
+      where: { authProviderId: user.id },
     });
 
     // Create user if doesn't exist
     if (!existingUser) {
       await prisma.user.create({
         data: {
+          authProviderId: user.id,
           email: user.email,
-          id: user.id,
-          name: user.given_name ?? "",
-          surname: user.family_name ?? "",
+          name:
+            user.given_name && user.family_name
+              ? `${user.given_name} ${user.family_name}`
+              : user.given_name ?? user.family_name ?? null,
+          avatarUrl: user.picture ?? null,
         },
       });
     }
