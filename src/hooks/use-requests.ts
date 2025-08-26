@@ -20,7 +20,7 @@ export function useRequests() {
   return useQuery({
     queryKey: queryKeys.requests,
     queryFn: getUserRequests,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 0, // Always consider data stale for immediate updates
     gcTime: 10 * 60 * 1000, // 10 minutes
     refetchOnWindowFocus: false,
     retry: 2,
@@ -47,7 +47,7 @@ export function useCreateRequest() {
   return useMutation({
     mutationFn: createRequest,
     onSuccess: () => {
-      // Invalidate and refetch requests list
+      // Invalidate and refetch requests list immediately
       queryClient.invalidateQueries({ queryKey: queryKeys.requests });
       toast.success("Request created successfully!");
     },
@@ -104,9 +104,12 @@ export function useUpdateRequestStatus() {
 
   return useMutation({
     mutationFn: updateRequestStatus,
-    onSuccess: () => {
-      // Invalidate both individual request and list
+    onSuccess: (data, variables) => {
+      // Invalidate both individual request and list for immediate UI update
       queryClient.invalidateQueries({ queryKey: queryKeys.requests });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.request(variables.id),
+      });
       toast.success("Status updated successfully!");
     },
     onError: (error: Error) => {

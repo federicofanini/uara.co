@@ -85,7 +85,9 @@ export default function RequestsClientPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Requests</h1>
+          <h1 className="text-3xl font-semibold">
+            requests<span className="text-teal-300">.</span>
+          </h1>
           <p className="text-muted-foreground">
             Manage your project requests and track progress.
           </p>

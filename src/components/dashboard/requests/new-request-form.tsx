@@ -19,16 +19,25 @@ import { useCreateRequest, useCreateBulkRequests } from "@/hooks/use-requests";
 import { toast } from "sonner";
 import {
   ArrowLeft,
-  AlertCircle,
   CheckCircle,
-  Clock,
   Loader2,
-  Eye,
-  Edit,
   Plus,
+  Trash2,
+  GripVertical,
+  Sparkles,
+  Zap,
+  Edit,
 } from "lucide-react";
 import Link from "next/link";
 import { type RequestSplitResult } from "@/packages/ai";
+
+// Type for editable subtasks
+interface EditableSubtask {
+  id: string;
+  title: string;
+  description: string;
+  isEditing?: boolean;
+}
 
 const priorityOptions = [
   { value: 1, label: "High", description: "Urgent, needs immediate attention" },
@@ -80,7 +89,8 @@ export function NewRequestForm() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] =
     useState<RequestSplitResult | null>(null);
-  const [showDraftPreview, setShowDraftPreview] = useState(false);
+  const [subtasks, setSubtasks] = useState<EditableSubtask[]>([]);
+  const [showSubtasks, setShowSubtasks] = useState(false);
 
   const createRequestMutation = useCreateRequest();
   const createBulkRequestsMutation = useCreateBulkRequests();
@@ -90,6 +100,12 @@ export function NewRequestForm() {
 
     if (!title.trim() || !description.trim()) {
       toast.error("Please fill in all required fields");
+      return;
+    }
+
+    // If we already have an analysis and subtasks, create the requests
+    if (showSubtasks && subtasks.length > 0) {
+      handleCreateBulkRequests();
       return;
     }
 
@@ -115,16 +131,30 @@ export function NewRequestForm() {
       }
 
       const analysis: RequestSplitResult = await response.json();
+      console.log("AI Analysis Result:", analysis);
       setAnalysisResult(analysis);
 
       if (analysis.isTooBig && analysis.subtasks.length > 0) {
-        // Show draft preview if request is too big
-        setShowDraftPreview(true);
-        toast.info(
-          "Request is too big! Preview the suggested breakdown below."
+        // Convert to editable subtasks and show them
+        const editableSubtasks: EditableSubtask[] = analysis.subtasks.map(
+          (subtask, index) => ({
+            id: `subtask-${index}`,
+            title: subtask.title,
+            description: subtask.description,
+          })
+        );
+        setSubtasks(editableSubtasks);
+        setShowSubtasks(true);
+        toast.success("ai thinks this is too big → split into smaller tasks");
+        console.log(
+          "AI suggested split into",
+          editableSubtasks.length,
+          "tasks:",
+          editableSubtasks
         );
       } else {
         // Create single request if it's the right size
+        console.log("AI says request is fine, creating single request");
         createSingleRequest();
       }
     } catch (error) {
@@ -147,6 +177,11 @@ export function NewRequestForm() {
   };
 
   const createSingleRequest = () => {
+    console.log("Creating single request:", {
+      title: title.trim(),
+      description: description.trim(),
+      priority,
+    });
     createRequestMutation.mutate(
       {
         title: title.trim(),
@@ -155,6 +190,7 @@ export function NewRequestForm() {
       },
       {
         onSuccess: (data) => {
+          console.log("Single request creation successful:", data);
           if (
             data.data?.success &&
             data.data &&
@@ -169,347 +205,461 @@ export function NewRequestForm() {
             router.push("/dashboard/requests");
           }
         },
-      }
-    );
-  };
-
-  const handleCreateBulkRequests = () => {
-    if (!analysisResult?.subtasks.length) return;
-
-    const requests = analysisResult.subtasks.map((subtask) => ({
-      title: subtask.title,
-      description: subtask.description,
-      priority,
-    }));
-
-    createBulkRequestsMutation.mutate(
-      { requests },
-      {
-        onSuccess: () => {
-          router.push("/dashboard/requests");
+        onError: (error) => {
+          console.error("Single request creation failed:", error);
         },
       }
     );
   };
 
+  const handleCreateBulkRequests = () => {
+    if (!subtasks.length) return;
+
+    const requests = subtasks.map((subtask) => ({
+      title: subtask.title,
+      description: subtask.description,
+      priority,
+    }));
+
+    console.log("Creating bulk requests:", requests);
+
+    createBulkRequestsMutation.mutate(
+      { requests },
+      {
+        onSuccess: (data) => {
+          const count = Array.isArray(data.data)
+            ? data.data.length
+            : subtasks.length;
+          toast.success(`queued ${count} tasks. let's ship.`);
+          console.log("Bulk creation successful, redirecting to dashboard");
+          router.push("/dashboard/requests");
+        },
+        onError: (error) => {
+          console.error("Bulk creation failed:", error);
+        },
+      }
+    );
+  };
+
+  // Subtask management functions
+  const updateSubtask = (id: string, updates: Partial<EditableSubtask>) => {
+    setSubtasks(
+      subtasks.map((task) => (task.id === id ? { ...task, ...updates } : task))
+    );
+  };
+
+  const deleteSubtask = (id: string) => {
+    setSubtasks(subtasks.filter((task) => task.id !== id));
+  };
+
+  const addSubtask = () => {
+    const newSubtask: EditableSubtask = {
+      id: `subtask-${Date.now()}`,
+      title: "",
+      description: "",
+      isEditing: true,
+    };
+    setSubtasks([...subtasks, newSubtask]);
+  };
+
+  const resetAnalysis = () => {
+    setAnalysisResult(null);
+    setSubtasks([]);
+    setShowSubtasks(false);
+  };
+
   const selectedPriority = priorityOptions.find((p) => p.value === priority);
 
   return (
-    <div className="space-y-6">
+    <div className=" flex flex-col">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-        <Link href="/dashboard/requests">
+      <div className="w-full flex flex-col sm:flex-row sm:items-center gap-4 mb-6 sm:mb-8">
+        <div>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-normal text-foreground">
+            describe what you need<span className="text-teal-300">.</span>
+          </h1>
+          <p className="text-sm sm:text-base text-muted-foreground leading-relaxed">
+            ai will split big requests into smaller tasks before creating them.
+          </p>
+        </div>
+        <Link href="/dashboard/requests" className="ml-auto">
           <Button variant="ghost" size="sm">
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Requests
           </Button>
         </Link>
-        <div>
-          <h1 className="text-2xl font-bold">New Request</h1>
-          <p className="text-muted-foreground">
-            Describe what you&apos;d like me to build or improve.
-          </p>
-        </div>
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-3">
-        {/* Form */}
-        <div className="lg:col-span-2">
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-lg font-medium mb-4">Request Details</h2>
-              <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Title */}
-                <div className="space-y-2">
-                  <Label htmlFor="title">
-                    Title <span className="text-destructive">*</span>
-                  </Label>
-                  <Input
-                    id="title"
-                    placeholder="e.g., Create a hero section with signup form"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    maxLength={255}
-                    required
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    {title.length}/255 characters
-                  </p>
-                </div>
-
-                {/* Description */}
-                <div className="space-y-2">
-                  <Label htmlFor="description">
-                    Description <span className="text-destructive">*</span>
-                  </Label>
-                  <Textarea
-                    id="description"
-                    placeholder="Describe your request in detail. Include any specific requirements, design preferences, or functionality you need..."
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    rows={6}
-                    required
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    Be as specific as possible. This helps me deliver exactly
-                    what you need.
-                  </p>
-                </div>
-
-                {/* Priority */}
-                <div className="space-y-2">
-                  <Label htmlFor="priority">Priority</Label>
-                  <Select
-                    value={priority.toString()}
-                    onValueChange={(value) => setPriority(parseInt(value))}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {priorityOptions.map((option) => (
-                        <SelectItem
-                          key={option.value}
-                          value={option.value.toString()}
-                        >
-                          <div className="flex items-center gap-2">
-                            <span>{option.label}</span>
-                            <span className="text-xs text-muted-foreground">
-                              - {option.description}
-                            </span>
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {selectedPriority && (
-                    <p className="text-xs text-muted-foreground">
-                      {selectedPriority.description}
-                    </p>
-                  )}
-                </div>
-
-                <Separator />
-
-                {/* Submit */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium">Ready to submit?</p>
-                    <p className="text-xs text-muted-foreground">
-                      AI will analyze your request before creating it.
-                    </p>
-                  </div>
-                  <Button
-                    type="submit"
-                    disabled={isAnalyzing || createRequestMutation.isPending}
-                    className="sm:w-auto w-full"
-                  >
-                    {isAnalyzing ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Analyzing...
-                      </>
-                    ) : createRequestMutation.isPending ? (
-                      "Creating..."
-                    ) : (
-                      "Analyze & Create Request"
-                    )}
-                  </Button>
-                </div>
-              </form>
+      <div className="w-full space-y-8">
+        {/* Main Form */}
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Original Request */}
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="title" className="text-base font-medium">
+                Title <span className="text-destructive">*</span>
+              </Label>
+              <Input
+                id="title"
+                placeholder="e.g., Create a hero section with signup form"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                maxLength={255}
+                required
+                className="text-base"
+                disabled={showSubtasks}
+              />
+              <p className="text-xs text-muted-foreground">
+                {title.length}/255 characters
+              </p>
             </div>
 
-            {/* Draft Preview Section */}
-            {showDraftPreview && analysisResult?.isTooBig && (
-              <div className="mt-8 p-6 border-2 border-dashed border-orange-200 rounded-lg bg-orange-50/50">
-                <div className="space-y-4">
-                  <div className="flex items-center gap-2">
-                    <Eye className="h-5 w-5 text-orange-600" />
-                    <h2 className="text-lg font-semibold text-orange-900">
-                      Request Breakdown Preview
-                    </h2>
-                  </div>
+            <div className="space-y-2">
+              <Label htmlFor="description" className="text-base font-medium">
+                Description <span className="text-destructive">*</span>
+              </Label>
+              <Textarea
+                id="description"
+                placeholder="Describe your request in detail. Include any specific requirements, design preferences, or functionality you need..."
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                rows={6}
+                required
+                className="text-base"
+                disabled={showSubtasks}
+              />
+              <p className="text-xs text-muted-foreground">
+                be as specific as possible. this helps me deliver exactly what
+                you need.
+              </p>
+            </div>
 
-                  <div className="bg-white/80 p-4 rounded-lg border border-orange-200">
-                    <p className="text-sm text-orange-800 mb-2 font-medium">
-                      {analysisResult.suggestion}
-                    </p>
-                    <p className="text-xs text-orange-700">
-                      {analysisResult.reasoning}
-                    </p>
-                  </div>
-
-                  <div className="space-y-3">
-                    <h3 className="text-sm font-medium text-orange-900">
-                      🎯 Suggested Breakdown ({analysisResult.subtasks.length}{" "}
-                      requests):
-                    </h3>
-
-                    <div className="space-y-3">
-                      {analysisResult.subtasks.map((subtask, index) => (
-                        <div
-                          key={index}
-                          className="bg-white p-4 rounded-lg border border-orange-200 shadow-sm"
-                        >
-                          <div className="space-y-2">
-                            <div className="flex items-start gap-2">
-                              <Badge
-                                variant="outline"
-                                className="text-xs shrink-0"
-                              >
-                                Request {index + 1}
-                              </Badge>
-                              <h4 className="text-sm font-medium text-gray-900">
-                                {subtask.title}
-                              </h4>
-                            </div>
-                            <p className="text-xs text-gray-600 pl-2">
-                              {subtask.description}
-                            </p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col sm:flex-row gap-3 pt-4">
-                    <Button
-                      onClick={handleCreateBulkRequests}
-                      disabled={createBulkRequestsMutation.isPending}
-                      className="flex-1"
+            <div className="space-y-2">
+              <Label htmlFor="priority" className="text-base font-medium">
+                Priority
+              </Label>
+              <Select
+                value={priority.toString()}
+                onValueChange={(value) => setPriority(parseInt(value))}
+                disabled={showSubtasks}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {priorityOptions.map((option) => (
+                    <SelectItem
+                      key={option.value}
+                      value={option.value.toString()}
                     >
-                      {createBulkRequestsMutation.isPending ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Creating {analysisResult.subtasks.length} requests...
-                        </>
-                      ) : (
-                        <>
-                          <Plus className="mr-2 h-4 w-4" />
-                          Create All {analysisResult.subtasks.length} Requests
-                        </>
-                      )}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => setShowDraftPreview(false)}
-                      disabled={createBulkRequestsMutation.isPending}
-                    >
-                      <Edit className="mr-2 h-4 w-4" />
-                      Edit Original
-                    </Button>
-                  </div>
+                      <div className="flex items-center gap-2">
+                        <span>{option.label}</span>
+                        <span className="text-xs text-muted-foreground">
+                          - {option.description}
+                        </span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {selectedPriority && (
+                <p className="text-xs text-muted-foreground">
+                  {selectedPriority.description}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* AI Split Results */}
+          {showSubtasks && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-teal-400" />
+                  <h2 className="text-lg font-medium">
+                    ai split this into {subtasks.length} smaller tasks
+                  </h2>
                 </div>
+                <Button variant="ghost" size="sm" onClick={resetAnalysis}>
+                  start over
+                </Button>
+              </div>
+
+              {analysisResult && (
+                <div className="p-4 rounded-lg bg-muted/50 border border-border">
+                  <p className="text-sm text-muted-foreground">
+                    {analysisResult.suggestion}
+                  </p>
+                </div>
+              )}
+
+              <div className="space-y-4">
+                {subtasks.map((subtask, index) => (
+                  <SubtaskCard
+                    key={subtask.id}
+                    subtask={subtask}
+                    index={index}
+                    onUpdate={updateSubtask}
+                    onDelete={deleteSubtask}
+                  />
+                ))}
+              </div>
+
+              <Button
+                type="button"
+                variant="outline"
+                onClick={addSubtask}
+                className="w-full"
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                add another task
+              </Button>
+            </div>
+          )}
+
+          {/* Submit Button */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-center gap-4 pt-6">
+            {!showSubtasks ? (
+              <div className="text-center space-y-4">
+                <Button
+                  type="submit"
+                  disabled={isAnalyzing || createRequestMutation.isPending}
+                  size="lg"
+                  className="text-base px-8"
+                >
+                  {isAnalyzing ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      analyzing...
+                    </>
+                  ) : createRequestMutation.isPending ? (
+                    "creating..."
+                  ) : (
+                    <>
+                      <Zap className="mr-2 h-4 w-4" />
+                      analyze & create
+                    </>
+                  )}
+                </Button>
+                <p className="text-xs text-muted-foreground">
+                  ai will check if this needs to be split into smaller tasks
+                </p>
+              </div>
+            ) : (
+              <div className="text-center space-y-4">
+                <Button
+                  type="submit"
+                  disabled={
+                    createBulkRequestsMutation.isPending ||
+                    subtasks.length === 0
+                  }
+                  size="lg"
+                  className="text-base px-8"
+                >
+                  {createBulkRequestsMutation.isPending ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      creating {subtasks.length} tasks...
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle className="mr-2 h-4 w-4" />
+                      create {subtasks.length} tasks
+                    </>
+                  )}
+                </Button>
+                <p className="text-xs text-muted-foreground">
+                  only 1 task will be active at a time. the rest will wait in
+                  your backlog.
+                </p>
               </div>
             )}
           </div>
+        </form>
+
+        {/* Tips Section */}
+        <div className="w-full space-y-6 pt-8 border-t border-border">
+          <h2 className="text-lg font-medium text-foreground">
+            tips for better requests
+          </h2>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="space-y-3">
+              <div className="flex items-start gap-3">
+                <span className="text-teal-400 font-mono text-sm mt-1">◇</span>
+                <div>
+                  <p className="text-sm font-medium">be specific</p>
+                  <p className="text-xs text-muted-foreground">
+                    include details about functionality, design, and any
+                    requirements.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <span className="text-teal-400 font-mono text-sm mt-1">◇</span>
+                <div>
+                  <p className="text-sm font-medium">share references</p>
+                  <p className="text-xs text-muted-foreground">
+                    link to examples, mockups, or similar websites you like.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="space-y-3">
+              <div className="flex items-start gap-3">
+                <span className="text-teal-400 font-mono text-sm mt-1">◇</span>
+                <div>
+                  <p className="text-sm font-medium">think scope</p>
+                  <p className="text-xs text-muted-foreground">
+                    each request should be completable in 2-3 days.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <span className="text-teal-400 font-mono text-sm mt-1">◇</span>
+                <div>
+                  <p className="text-sm font-medium">trust the ai</p>
+                  <p className="text-xs text-muted-foreground">
+                    if it suggests splitting, it's probably right.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Sidebar */}
-        <div className="space-y-8">
-          {/* Process Info */}
-          <div className="space-y-4">
-            <h3 className="text-base font-medium">How it works</h3>
-            <div className="space-y-4">
-              <div className="flex items-start gap-3">
-                <div className="rounded-full bg-primary/10 p-2 shrink-0">
-                  <Clock className="h-4 w-4 text-primary" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium">Added to backlog</p>
-                  <p className="text-xs text-muted-foreground">
-                    Your request starts in the backlog queue
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3">
-                <div className="rounded-full bg-blue-500/10 p-2 shrink-0">
-                  <AlertCircle className="h-4 w-4 text-blue-500" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium">Becomes active</p>
-                  <p className="text-xs text-muted-foreground">
-                    Only 1 request can be active at a time
-                  </p>
+        {/* Examples */}
+        <div className="w-full space-y-6">
+          <h2 className="text-lg font-medium text-foreground">
+            example requests
+          </h2>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            {requestExamples.map((category) => (
+              <div key={category.category} className="space-y-3">
+                <Badge variant="outline" className="text-xs">
+                  {category.category}
+                </Badge>
+                <div className="space-y-2">
+                  {category.examples.map((example, index) => (
+                    <div
+                      key={index}
+                      className="text-xs text-muted-foreground cursor-pointer hover:text-foreground transition-colors p-2 rounded hover:bg-muted/50 border border-transparent hover:border-border"
+                      onClick={() => {
+                        if (!title && !showSubtasks) setTitle(example);
+                      }}
+                    >
+                      {example}
+                    </div>
+                  ))}
                 </div>
               </div>
-
-              <div className="flex items-start gap-3">
-                <div className="rounded-full bg-green-500/10 p-2 shrink-0">
-                  <CheckCircle className="h-4 w-4 text-green-500" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium">Delivered in 2-3 days</p>
-                  <p className="text-xs text-muted-foreground">
-                    Most requests completed within this timeframe
-                  </p>
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
-
-          <Separator />
-
-          {/* Examples */}
-          <div className="space-y-4">
-            <h3 className="text-base font-medium">Example Requests</h3>
-            <div className="space-y-4">
-              {requestExamples.map((category) => (
-                <div key={category.category} className="space-y-2">
-                  <Badge variant="outline" className="text-xs">
-                    {category.category}
-                  </Badge>
-                  <ul className="space-y-1">
-                    {category.examples.map((example, index) => (
-                      <li
-                        key={index}
-                        className="text-xs text-muted-foreground cursor-pointer hover:text-foreground transition-colors p-1 rounded hover:bg-muted"
-                        onClick={() => {
-                          if (!title) setTitle(example);
-                        }}
-                      >
-                        • {example}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-              <p className="text-xs text-muted-foreground">
-                💡 Click any example to use it as your title
-              </p>
-            </div>
-          </div>
-
-          <Separator />
-
-          {/* Tips */}
-          <div className="space-y-4">
-            <h3 className="text-base font-medium">Tips for better requests</h3>
-            <div className="space-y-3 text-xs text-muted-foreground">
-              <div>
-                <p className="font-medium text-foreground">Be specific</p>
-                <p>
-                  Include details about functionality, design, and any
-                  requirements
-                </p>
-              </div>
-              <div>
-                <p className="font-medium text-foreground">Share references</p>
-                <p>Link to examples, mockups, or similar websites you like</p>
-              </div>
-              <div>
-                <p className="font-medium text-foreground">Break it down</p>
-                <p>Large features work better as multiple smaller requests</p>
-              </div>
-              <div>
-                <p className="font-medium text-foreground">Think scope</p>
-                <p>Each request should be completable in 2-3 days</p>
-              </div>
-            </div>
-          </div>
+          <p className="text-xs text-muted-foreground text-center">
+            💡 click any example to use it as your title
+          </p>
         </div>
       </div>
+    </div>
+  );
+}
+
+// SubtaskCard Component
+interface SubtaskCardProps {
+  subtask: EditableSubtask;
+  index: number;
+  onUpdate: (id: string, updates: Partial<EditableSubtask>) => void;
+  onDelete: (id: string) => void;
+}
+
+function SubtaskCard({ subtask, index, onUpdate, onDelete }: SubtaskCardProps) {
+  const [localTitle, setLocalTitle] = useState(subtask.title);
+  const [localDescription, setLocalDescription] = useState(subtask.description);
+
+  const isEditing = subtask.isEditing || false;
+
+  const handleSave = () => {
+    onUpdate(subtask.id, {
+      title: localTitle.trim(),
+      description: localDescription.trim(),
+      isEditing: false,
+    });
+  };
+
+  const handleCancel = () => {
+    setLocalTitle(subtask.title);
+    setLocalDescription(subtask.description);
+    onUpdate(subtask.id, { isEditing: false });
+  };
+
+  const handleEdit = () => {
+    onUpdate(subtask.id, { isEditing: true });
+  };
+
+  return (
+    <div className="p-3 sm:p-4 rounded-lg border border-border bg-card space-y-3">
+      <div className="flex items-center justify-between">
+        <Badge variant="outline" className="text-xs">
+          Task {index + 1}
+        </Badge>
+        <div className="flex items-center gap-1 sm:gap-2">
+          {!isEditing && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={handleEdit}
+              className="h-6 w-6 p-0"
+            >
+              <Edit className="h-3 w-3" />
+            </Button>
+          )}
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => onDelete(subtask.id)}
+            className="h-6 w-6 p-0 text-destructive hover:text-destructive"
+          >
+            <Trash2 className="h-3 w-3" />
+          </Button>
+        </div>
+      </div>
+
+      {isEditing ? (
+        <div className="space-y-3">
+          <Input
+            value={localTitle}
+            onChange={(e) => setLocalTitle(e.target.value)}
+            placeholder="Task title..."
+            className="text-sm"
+          />
+          <Textarea
+            value={localDescription}
+            onChange={(e) => setLocalDescription(e.target.value)}
+            placeholder="Task description..."
+            rows={3}
+            className="text-sm"
+          />
+          <div className="flex gap-2">
+            <Button type="button" size="sm" onClick={handleSave}>
+              Save
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleCancel}
+            >
+              Cancel
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          <h4 className="text-sm font-medium">{subtask.title}</h4>
+          <p className="text-xs text-muted-foreground">{subtask.description}</p>
+        </div>
+      )}
     </div>
   );
 }
