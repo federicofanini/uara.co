@@ -6,6 +6,7 @@ import { OpenPanelComponent } from "@openpanel/nextjs";
 import { Header } from "@/components/header";
 import { DATA } from "@/data/metadata";
 import { Footer } from "@/components/footer";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -111,6 +112,7 @@ export default function RootLayout({
           trackScreenViews={true}
           disabled={process.env.NODE_ENV !== "production"}
         />
+        <Toaster />
       </body>
     </html>
   );

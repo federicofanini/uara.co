@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
 
     // Create user if doesn't exist
     if (!existingUser) {
-      await prisma.user.create({
+      const newUser = await prisma.user.create({
         data: {
           authProviderId: user.id,
           email: user.email,
@@ -27,6 +27,16 @@ export async function GET(request: NextRequest) {
               ? `${user.given_name} ${user.family_name}`
               : user.given_name ?? user.family_name ?? null,
           avatarUrl: user.picture ?? null,
+        },
+      });
+
+      // Initialize default user settings
+      await prisma.userSettings.create({
+        data: {
+          userId: newUser.id,
+          notifyOnStatus: true,
+          notifyOnComment: true,
+          marketingEmails: false,
         },
       });
     }

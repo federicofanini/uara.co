@@ -252,12 +252,6 @@ model UserSettings {
   notifyOnComment Boolean @default(true)
   marketingEmails Boolean @default(false)
 
-  // Settings moved from OrgSettings
-  preferredComms      String? // "email" | "slack" | etc.
-  slackChannel        String?
-  slotOverride        Int? // override concurrent slots if set
-  allowPublicExamples Boolean @default(true)
-
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
