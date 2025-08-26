@@ -3,6 +3,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
+import Image from "next/image";
 import Link from "next/link";
 
 /*
@@ -40,12 +41,10 @@ export function Logo() {
   return (
     <HoverCard openDelay={0} closeDelay={0}>
       <HoverCardTrigger className="block">
-        <span className="inline-flex items-center rounded-md border border-dashed border-zinc-700/60 px-2 py-1 font-mono text-xs text-zinc-400 hover:text-zinc-100">
-          <span className="font-semibold">uara</span>
-          <span className="rounded-sm bg-zinc-900/60 py-0.5 text-[9px] uppercase tracking-widest text-emerald-400">
-            .co
-          </span>
-        </span>
+        <div className="flex items-center gap-2">
+          <Image src="/logo-uara.svg" alt="logo" width={16} height={16} />
+          <span className="text-md font-mono">uara</span>
+        </div>
       </HoverCardTrigger>
       <HoverCardContent className="mt-4 w-72 p-3">
         <div className="space-y-2 text-xs font-mono text-zinc-400">
