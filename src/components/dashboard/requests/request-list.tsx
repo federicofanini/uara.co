@@ -125,13 +125,16 @@ function RequestItem({ request }: { request: RequestWithDetails }) {
   const statusInfo = statusConfig[request.status];
   const StatusIcon = statusInfo.icon;
 
-  const formatDate = (date: Date) => {
+  const formatDate = (date: Date | string) => {
+    const dateObj = new Date(date);
     return new Intl.DateTimeFormat("en-US", {
       month: "short",
       day: "numeric",
       year:
-        date.getFullYear() !== new Date().getFullYear() ? "numeric" : undefined,
-    }).format(new Date(date));
+        dateObj.getFullYear() !== new Date().getFullYear()
+          ? "numeric"
+          : undefined,
+    }).format(dateObj);
   };
 
   const canDelete = request.status === RequestStatus.BACKLOG;

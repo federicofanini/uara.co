@@ -44,6 +44,18 @@ const addAttachmentSchema = z.object({
   kind: z.string().optional(),
 });
 
+const createBulkRequestsSchema = z.object({
+  requests: z
+    .array(
+      z.object({
+        title: z.string().min(1, "Title is required").max(255),
+        description: z.string().min(1, "Description is required"),
+        priority: z.number().int().min(1).max(5).default(3),
+      })
+    )
+    .min(1, "At least one request is required"),
+});
+
 // Create new request
 export const createRequest = createSafeActionClient()
   .schema(createRequestSchema)
@@ -453,6 +465,95 @@ export const deleteRequest = createSafeActionClient()
       };
     } catch (error) {
       console.error("Delete request error:", error);
+      return {
+        success: false,
+        error: appErrors.DATABASE_ERROR,
+      };
+    }
+  });
+
+// Create multiple requests in bulk
+export const createBulkRequests = createSafeActionClient()
+  .schema(createBulkRequestsSchema)
+  .action(async (input): Promise<ActionResponse> => {
+    try {
+      const user = await getCurrentUser();
+
+      // Check if user already has an active request
+      const activeRequest = await prisma.request.findFirst({
+        where: {
+          userId: user.id,
+          status: RequestStatus.ACTIVE,
+        },
+      });
+
+      if (activeRequest) {
+        return {
+          success: false,
+          error:
+            "You already have an active request. Only one request can be active at a time.",
+        };
+      }
+
+      // Get the highest order index for backlog items
+      const lastBacklogItem = await prisma.request.findFirst({
+        where: {
+          userId: user.id,
+          status: RequestStatus.BACKLOG,
+        },
+        orderBy: { orderIndex: "desc" },
+      });
+
+      let currentOrderIndex = (lastBacklogItem?.orderIndex || 0) + 1;
+
+      // Create all requests in a transaction
+      const createdRequests = await prisma.$transaction(
+        input.parsedInput.requests.map((requestData) => {
+          const sanitizedData = sanitizeObject(requestData);
+          const orderIndex = currentOrderIndex++;
+
+          return prisma.request.create({
+            data: {
+              ...sanitizedData,
+              userId: user.id,
+              createdById: user.id,
+              status: RequestStatus.BACKLOG,
+              orderIndex,
+            },
+            include: {
+              comments: true,
+              attachments: true,
+              _count: {
+                select: {
+                  comments: true,
+                  attachments: true,
+                },
+              },
+            },
+          });
+        })
+      );
+
+      // Log activity for each created request
+      await Promise.all(
+        createdRequests.map((request) =>
+          logActivity(user.id, request.id, ActivityType.CREATED, {
+            title: request.title,
+            bulkCreate: true,
+          })
+        )
+      );
+
+      // Invalidate cache
+      revalidateTag("requests");
+      revalidatePath("/dashboard/requests");
+
+      return {
+        success: true,
+        data: createdRequests,
+      };
+    } catch (error) {
+      console.error("Create bulk requests error:", error);
       return {
         success: false,
         error: appErrors.DATABASE_ERROR,

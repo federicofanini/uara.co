@@ -6,6 +6,7 @@ import { queryKeys } from "@/lib/query-client";
 import { getUserRequests, getRequest } from "@/data/requests";
 import {
   createRequest,
+  createBulkRequests,
   updateRequest,
   updateRequestStatus,
   addComment,
@@ -54,6 +55,26 @@ export function useCreateRequest() {
       const serverError = (error as unknown as { serverError?: string })
         .serverError;
       toast.error(serverError || "Failed to create request");
+    },
+  });
+}
+
+// Custom hook for creating multiple requests in bulk
+export function useCreateBulkRequests() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: createBulkRequests,
+    onSuccess: (data) => {
+      // Invalidate and refetch requests list
+      queryClient.invalidateQueries({ queryKey: queryKeys.requests });
+      const count = Array.isArray(data.data) ? data.data.length : 0;
+      toast.success(`${count} requests created successfully!`);
+    },
+    onError: (error: Error) => {
+      const serverError = (error as unknown as { serverError?: string })
+        .serverError;
+      toast.error(serverError || "Failed to create requests");
     },
   });
 }

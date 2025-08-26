@@ -82,6 +82,8 @@ export function Shipped() {
                     <Image
                       src={`/work/${project.logoUrl}`}
                       alt={`${project.company} logo`}
+                      width={32}
+                      height={32}
                       className="w-6 h-6 sm:w-8 sm:h-8 object-contain"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
