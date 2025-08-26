@@ -97,7 +97,7 @@ interface RequestDetailData {
   } | null;
 }
 
-interface RequestDetailProps {
+export interface RequestDetailProps {
   request: RequestDetailData;
 }
 

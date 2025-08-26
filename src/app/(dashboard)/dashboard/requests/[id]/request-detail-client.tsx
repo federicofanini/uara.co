@@ -1,7 +1,10 @@
 "use client";
 
 import { useRequest } from "@/hooks/use-requests";
-import { RequestDetail } from "@/components/dashboard/requests/request-detail";
+import {
+  RequestDetail,
+  type RequestDetailProps,
+} from "@/components/dashboard/requests/request-detail";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowLeft, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -124,5 +127,7 @@ export default function RequestDetailClientPage({
     notFound();
   }
 
-  return <RequestDetail request={result.data as RequestDetailData} />;
+  return (
+    <RequestDetail request={result.data as RequestDetailProps["request"]} />
+  );
 }
