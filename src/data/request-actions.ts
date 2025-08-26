@@ -3,7 +3,7 @@
 import { createSafeActionClient } from "next-safe-action";
 import { z } from "zod";
 import { revalidatePath, revalidateTag } from "next/cache";
-import prisma from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import { sanitizeObject } from "@/lib/utils";
 import type { ActionResponse } from "@/data/types/action-response";
 import { appErrors } from "@/data/types/errors";

@@ -4,7 +4,7 @@ import { createSafeActionClient } from "next-safe-action";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-import prisma from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import type { ActionResponse } from "@/data/types/action-response";
 import { appErrors } from "@/data/types/errors";
 
