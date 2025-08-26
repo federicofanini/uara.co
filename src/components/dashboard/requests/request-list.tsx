@@ -35,9 +35,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import Link from "next/link";
-import { updateRequestStatus, deleteRequest } from "@/data/requests";
-import { useAction } from "next-safe-action/hooks";
-import { toast } from "sonner";
+import { useUpdateRequestStatus, useDeleteRequest } from "@/hooks/use-requests";
 import { RequestStatus } from "@prisma/client";
 
 // Type definitions based on the Prisma schema
@@ -121,30 +119,8 @@ const priorityLabels = {
 function RequestItem({ request }: { request: RequestWithDetails }) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
-  const { execute: updateStatus, isExecuting: isUpdatingStatus } = useAction(
-    updateRequestStatus,
-    {
-      onSuccess: () => {
-        toast.success("Request status updated");
-      },
-      onError: ({ error }) => {
-        toast.error(error.serverError || "Failed to update status");
-      },
-    }
-  );
-
-  const { execute: deleteReq, isExecuting: isDeleting } = useAction(
-    deleteRequest,
-    {
-      onSuccess: () => {
-        toast.success("Request deleted");
-        setShowDeleteDialog(false);
-      },
-      onError: ({ error }) => {
-        toast.error(error.serverError || "Failed to delete request");
-      },
-    }
-  );
+  const updateStatusMutation = useUpdateRequestStatus();
+  const deleteRequestMutation = useDeleteRequest();
 
   const statusInfo = statusConfig[request.status];
   const StatusIcon = statusInfo.icon;
@@ -241,12 +217,12 @@ function RequestItem({ request }: { request: RequestWithDetails }) {
               {canActivate && (
                 <DropdownMenuItem
                   onClick={() =>
-                    updateStatus({
+                    updateStatusMutation.mutate({
                       id: request.id,
                       status: RequestStatus.ACTIVE,
                     })
                   }
-                  disabled={isUpdatingStatus}
+                  disabled={updateStatusMutation.isPending}
                 >
                   <Play className="mr-2 h-4 w-4" />
                   Make Active
@@ -283,11 +259,14 @@ function RequestItem({ request }: { request: RequestWithDetails }) {
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => deleteReq({ id: request.id })}
-              disabled={isDeleting}
+              onClick={() => {
+                deleteRequestMutation.mutate({ id: request.id });
+                setShowDeleteDialog(false);
+              }}
+              disabled={deleteRequestMutation.isPending}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {isDeleting ? "Deleting..." : "Delete"}
+              {deleteRequestMutation.isPending ? "Deleting..." : "Delete"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

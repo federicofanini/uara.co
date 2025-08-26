@@ -15,8 +15,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { createRequest } from "@/data/requests";
-import { useAction } from "next-safe-action/hooks";
+import { useCreateRequest } from "@/hooks/use-requests";
 import { toast } from "sonner";
 import { ArrowLeft, AlertCircle, CheckCircle, Clock } from "lucide-react";
 import Link from "next/link";
@@ -69,19 +68,7 @@ export function NewRequestForm() {
   const [description, setDescription] = useState("");
   const [priority, setPriority] = useState<number>(3);
 
-  const { execute: create, isExecuting } = useAction(createRequest, {
-    onSuccess: (data) => {
-      toast.success("Request created successfully!");
-      if (data.data && "id" in data.data) {
-        router.push(`/dashboard/requests/${(data.data as any).id}`);
-      } else {
-        router.push("/dashboard/requests");
-      }
-    },
-    onError: ({ error }) => {
-      toast.error(error.serverError || "Failed to create request");
-    },
-  });
+  const createRequestMutation = useCreateRequest();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,11 +78,28 @@ export function NewRequestForm() {
       return;
     }
 
-    create({
-      title: title.trim(),
-      description: description.trim(),
-      priority,
-    });
+    createRequestMutation.mutate(
+      {
+        title: title.trim(),
+        description: description.trim(),
+        priority,
+      },
+      {
+        onSuccess: (data) => {
+          if (
+            data.data?.success &&
+            data.data &&
+            typeof data.data === "object" &&
+            data.data !== null &&
+            "id" in data.data
+          ) {
+            router.push(`/dashboard/requests/${(data.data as any).id}`);
+          } else {
+            router.push("/dashboard/requests");
+          }
+        },
+      }
+    );
   };
 
   const selectedPriority = priorityOptions.find((p) => p.value === priority);
@@ -207,10 +211,12 @@ export function NewRequestForm() {
                   </div>
                   <Button
                     type="submit"
-                    disabled={isExecuting}
+                    disabled={createRequestMutation.isPending}
                     className="sm:w-auto w-full"
                   >
-                    {isExecuting ? "Creating..." : "Create Request"}
+                    {createRequestMutation.isPending
+                      ? "Creating..."
+                      : "Create Request"}
                   </Button>
                 </div>
               </form>

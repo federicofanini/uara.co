@@ -2,10 +2,9 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ui/theme-provider";
+import { QueryProvider } from "@/components/providers/query-provider";
 import { OpenPanelComponent } from "@openpanel/nextjs";
-import { Header } from "@/components/header";
 import { DATA } from "@/data/metadata";
-import { Footer } from "@/components/footer";
 import { Toaster } from "sonner";
 
 const geistSans = Geist({
@@ -104,7 +103,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <QueryProvider>{children}</QueryProvider>
         </ThemeProvider>
         <OpenPanelComponent
           clientId={process.env.NEXT_PUBLIC_OPEN_PANEL_CLIENT_ID!}

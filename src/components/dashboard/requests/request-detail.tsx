@@ -43,12 +43,11 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import {
-  updateRequest,
-  updateRequestStatus,
-  addComment,
-  addAttachment,
-} from "@/data/requests";
-import { useAction } from "next-safe-action/hooks";
+  useUpdateRequest,
+  useUpdateRequestStatus,
+  useAddComment,
+  useAddAttachment,
+} from "@/hooks/use-requests";
 import { toast } from "sonner";
 import { RequestStatus, ActivityType, CommentVisibility } from "@prisma/client";
 
@@ -268,54 +267,10 @@ export function RequestDetail({ request }: RequestDetailProps) {
   const [newComment, setNewComment] = useState("");
   const [newAttachmentUrl, setNewAttachmentUrl] = useState("");
 
-  const { execute: updateReq, isExecuting: isUpdating } = useAction(
-    updateRequest,
-    {
-      onSuccess: () => {
-        toast.success("Request updated");
-        setIsEditing(false);
-      },
-      onError: ({ error }) => {
-        toast.error(error.serverError || "Failed to update request");
-      },
-    }
-  );
-
-  const { execute: updateStatus, isExecuting: isUpdatingStatus } = useAction(
-    updateRequestStatus,
-    {
-      onSuccess: () => {
-        toast.success("Status updated");
-      },
-      onError: ({ error }) => {
-        toast.error(error.serverError || "Failed to update status");
-      },
-    }
-  );
-
-  const { execute: addCommentAction, isExecuting: isAddingComment } = useAction(
-    addComment,
-    {
-      onSuccess: () => {
-        toast.success("Comment added");
-        setNewComment("");
-      },
-      onError: ({ error }) => {
-        toast.error(error.serverError || "Failed to add comment");
-      },
-    }
-  );
-
-  const { execute: addAttachmentAction, isExecuting: isAddingAttachment } =
-    useAction(addAttachment, {
-      onSuccess: () => {
-        toast.success("Attachment added");
-        setNewAttachmentUrl("");
-      },
-      onError: ({ error }) => {
-        toast.error(error.serverError || "Failed to add attachment");
-      },
-    });
+  const updateRequestMutation = useUpdateRequest();
+  const updateStatusMutation = useUpdateRequestStatus();
+  const addCommentMutation = useAddComment();
+  const addAttachmentMutation = useAddAttachment();
 
   const statusInfo = statusConfig[request.status];
   const StatusIcon = statusInfo.icon;
@@ -331,37 +286,40 @@ export function RequestDetail({ request }: RequestDetailProps) {
   };
 
   const handleSave = () => {
-    updateReq({
+    updateRequestMutation.mutate({
       id: request.id,
       title: title.trim(),
       description: description.trim(),
       priority,
       previewUrl: previewUrl.trim() || null,
     });
+    setIsEditing(false);
   };
 
   const handleStatusChange = (newStatus: RequestStatus) => {
-    updateStatus({ id: request.id, status: newStatus });
+    updateStatusMutation.mutate({ id: request.id, status: newStatus });
   };
 
   const handleAddComment = () => {
     if (!newComment.trim()) return;
-    addCommentAction({
+    addCommentMutation.mutate({
       requestId: request.id,
       body: newComment.trim(),
       visibility: CommentVisibility.PUBLIC,
     });
+    setNewComment("");
   };
 
   const handleAddAttachment = () => {
     if (!newAttachmentUrl.trim()) return;
     try {
       new URL(newAttachmentUrl); // Validate URL
-      addAttachmentAction({
+      addAttachmentMutation.mutate({
         requestId: request.id,
         url: newAttachmentUrl.trim(),
         kind: "link",
       });
+      setNewAttachmentUrl("");
     } catch {
       toast.error("Please enter a valid URL");
     }
@@ -397,7 +355,7 @@ export function RequestDetail({ request }: RequestDetailProps) {
           {request.status === RequestStatus.BACKLOG && (
             <Button
               onClick={() => handleStatusChange(RequestStatus.ACTIVE)}
-              disabled={isUpdatingStatus}
+              disabled={updateStatusMutation.isPending}
               size="sm"
             >
               <Play className="mr-2 h-4 w-4" />
@@ -494,8 +452,13 @@ export function RequestDetail({ request }: RequestDetailProps) {
                   />
                 </div>
                 <div className="flex gap-2">
-                  <Button onClick={handleSave} disabled={isUpdating}>
-                    {isUpdating ? "Saving..." : "Save Changes"}
+                  <Button
+                    onClick={handleSave}
+                    disabled={updateRequestMutation.isPending}
+                  >
+                    {updateRequestMutation.isPending
+                      ? "Saving..."
+                      : "Save Changes"}
                   </Button>
                   <Button variant="outline" onClick={() => setIsEditing(false)}>
                     Cancel
@@ -558,11 +521,11 @@ export function RequestDetail({ request }: RequestDetailProps) {
               />
               <Button
                 onClick={handleAddComment}
-                disabled={!newComment.trim() || isAddingComment}
+                disabled={!newComment.trim() || addCommentMutation.isPending}
                 size="sm"
               >
                 <Send className="mr-2 h-4 w-4" />
-                {isAddingComment ? "Adding..." : "Add Comment"}
+                {addCommentMutation.isPending ? "Adding..." : "Add Comment"}
               </Button>
             </div>
           </div>
@@ -650,12 +613,16 @@ export function RequestDetail({ request }: RequestDetailProps) {
               />
               <Button
                 onClick={handleAddAttachment}
-                disabled={!newAttachmentUrl.trim() || isAddingAttachment}
+                disabled={
+                  !newAttachmentUrl.trim() || addAttachmentMutation.isPending
+                }
                 size="sm"
                 variant="outline"
                 className="w-full"
               >
-                {isAddingAttachment ? "Adding..." : "Add Attachment"}
+                {addAttachmentMutation.isPending
+                  ? "Adding..."
+                  : "Add Attachment"}
               </Button>
             </div>
           </div>
