@@ -1,6 +1,6 @@
 import { SettingsPage } from "@/components/dashboard/settings";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-import { prisma } from "@/lib/prisma";
+import prisma from "@/lib/prisma";
 import { redirect } from "next/navigation";
 
 export default async function DashboardSettingsPage() {

@@ -300,7 +300,7 @@ export function NewRequestForm() {
 
   // Filter requests to show only BACKLOG status
   const backlogRequests = requests.filter(
-    (request: any) => request.status === "BACKLOG"
+    (request: { status: string }) => request.status === "BACKLOG"
   );
 
   return (

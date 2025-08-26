@@ -1,7 +1,6 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { Icons } from "@/components/ui/icons";
 import Link from "next/link";
 import { useState } from "react";
 import { MainMenu } from "@/components/dashboard/main-menu";
