@@ -12,7 +12,7 @@ export function MobileMenu() {
 
   return (
     <Sheet open={isOpen} onOpenChange={setOpen}>
-      <div>
+      <div className="flex justify-end">
         <Button
           variant="outline"
           size="icon"
@@ -23,17 +23,17 @@ export function MobileMenu() {
         </Button>
       </div>
       <SheetContent side="left" className="border-none rounded-none -ml-4">
-        <div className="ml-2 mb-8">
+        <div className="ml-10 mt-8">
           <Image
             src="/logo-uara.svg"
             alt="logo"
-            width={40}
-            height={40}
-            className="w-10 h-10"
+            width={30}
+            height={30}
+            className="w-8 h-8"
           />
         </div>
 
-        <div className="-ml-2">
+        <div className="ml-4">
           <MainMenu onSelect={() => setOpen(false)} isExpanded={true} />
         </div>
       </SheetContent>
