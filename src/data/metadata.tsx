@@ -3,7 +3,7 @@ import { Twitter, Linkedin, Mail } from "lucide-react";
 
 export const DATA = {
   // Brand & positioning
-  name: "uara — Shippin Websites (Shadcn + Next.js)",
+  name: "uara | world-class websites for saas and startups",
   initials: "UA",
   url: "https://uara.co",
   location: "Remote • Europe (CET)",
@@ -11,7 +11,7 @@ export const DATA = {
   description:
     "Flat monthly subscription for clean, fast websites built with Shadcn UI + Next.js. Unlimited requests, one active at a time, 2–3 day turnaround. Live revenue. Founder building in public.",
   summary:
-    "I’m a medtech founder funding science by building simple, clean websites on a flat monthly subscription. Tech: Next.js, Tailwind, Shadcn UI, Supabase, Stripe, Vercel. Unlimited requests (1 active), 2–3 day turnaround, full transparency (live revenue).",
+    "I’m building simple, clean websites on a flat monthly subscription. Tech: Next.js, Tailwind, Shadcn UI, Supabase, Stripe, Vercel. Unlimited requests (1 active), 2–3 day turnaround, full transparency (live revenue).",
 
   avatarUrl: "/logo-uara.png",
 
@@ -138,7 +138,8 @@ export const DATA = {
   // 🌐 Per-page SEO metadata (titles, descriptions, og)
   meta: {
     home: {
-      title: "uara — need a website? hire a broke founder",
+      title:
+        "uara — need a website? world-class websites for saas and startups",
       description:
         "Flat monthly subscription for clean Shadcn + Next.js websites. Unlimited requests (1 active), 2–3 day turnaround, full transparency. Revenue is public. ",
       ogImage: "/og/opengraph-image.png",
@@ -210,13 +211,13 @@ export const DATA = {
     product: {
       "@context": "https://schema.org",
       "@type": "Product",
-      name: "uara — Shippin Websites",
+      name: "uara | world-class websites for saas and startups",
       description:
         "Flat monthly subscription for Shadcn + Next.js websites. Unlimited requests, one active at a time, 2–3 day turnaround. Live revenue.",
       brand: { "@type": "Brand", name: "uara" },
       offers: {
         "@type": "Offer",
-        priceCurrency: "EUR",
+        priceCurrency: "USD",
         price: "900.00",
         availability: "https://schema.org/InStock",
         url: "https://uara.co/pricing",
