@@ -1,6 +1,6 @@
+import { HeroPricing } from "./pricing";
 import { Memes } from "./memes";
 import { Revenues } from "./revenues";
-import { SubscribeComponent } from "./subscribe-component";
 
 export function Hero() {
   return (
@@ -25,7 +25,7 @@ export function Hero() {
         {/* <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
           <Buttoon>gimme a website</Buttoon>
         </div> */}
-        <SubscribeComponent />
+        <HeroPricing />
       </div>
 
       {/* Why This Exists */}
