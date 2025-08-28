@@ -5,7 +5,6 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import { Icons } from "./ui/icons";
-import { SubscribeInput } from "./subscribe-input";
 
 export function Footer({ fullWidth = false }: { fullWidth?: boolean }) {
   const pathname = usePathname();
@@ -112,10 +111,6 @@ export function Footer({ fullWidth = false }: { fullWidth?: boolean }) {
                     <span>{link.label}</span>
                   </Link>
                 ))}
-              </div>
-
-              <div className="space-y-1 pt-2">
-                <SubscribeInput />
               </div>
             </div>
           </div>

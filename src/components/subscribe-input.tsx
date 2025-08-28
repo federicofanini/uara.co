@@ -58,7 +58,7 @@ export function SubscribeInput() {
 
               if (result?.data?.success) {
                 setSubmitted(true);
-                toast.success("Thanks for joining the waiting list!");
+                toast.success("Thanks for joining!");
                 setTimeout(() => {
                   setSubmitted(false);
                 }, 5000);
@@ -69,7 +69,7 @@ export function SubscribeInput() {
           >
             <fieldset className="relative">
               <input
-                placeholder="join the waiting list"
+                placeholder="join the queue"
                 type="email"
                 name="email"
                 id="email"

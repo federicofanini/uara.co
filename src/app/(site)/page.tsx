@@ -12,12 +12,13 @@ export default function Home() {
     <>
       <Hero />
       <DottedSeparator />
-      <Shipped />
       <Pricing />
       <DottedSeparator />
-      <WallOfLove />
-      <DottedSeparator />
       <Rules />
+      <DottedSeparator />
+      <Shipped />
+      <DottedSeparator />
+      <WallOfLove />
       <DottedSeparator />
       <FAQ />
       <DottedSeparator />

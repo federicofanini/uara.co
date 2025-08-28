@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "./ui/card";
-import { Clock, Gift } from "lucide-react";
+import { ArrowRight, Clock, Gift } from "lucide-react";
 import { Buttoon } from "./buttoon";
 import Link from "next/link";
 import { products } from "@/lib/products";
@@ -36,10 +36,16 @@ export function Pricing() {
         <h2 className="text-2xl md:text-3xl font-medium text-foreground">
           one plan. infinite copium<span className="text-teal-300">.</span>
         </h2>
-        <div className="flex justify-center">
+        <div className="flex flex-col gap-2 items-center justify-center">
           <Badge variant="secondary" className="text-xs font-mono">
-            <span className="text-teal-300 font-bold">5</span> spots available
+            <span className="text-teal-300 font-bold">5/5</span> spots left.
           </Badge>
+          <Link
+            href="/queue"
+            className="text-xs text-muted-foreground font-mono flex items-center gap-2"
+          >
+            see queue <ArrowRight className="w-4 h-4" />
+          </Link>
         </div>
       </div>
 
@@ -66,7 +72,7 @@ export function Pricing() {
                     className="text-xs text-teal-300 border-teal-300"
                   >
                     <Gift className="w-4 h-4" />
-                    launch price
+                    launch deal
                   </Badge>
                 </div>
               </div>
@@ -126,7 +132,7 @@ export function Pricing() {
 
               <div className="pt-4">
                 <Buttoon className="w-full">
-                  <Link href={products[0].link}>get started</Link>
+                  <Link href={products[0].link}>gimme a website</Link>
                 </Buttoon>
                 <p className="text-xs text-muted-foreground text-center mt-2 font-mono">
                   → flat one-time fee. no drama.

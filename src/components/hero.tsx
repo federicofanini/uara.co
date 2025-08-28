@@ -1,5 +1,4 @@
 import { HeroPricing } from "./pricing";
-import { Memes } from "./memes";
 import { Revenues } from "./revenues";
 
 export function Hero() {
@@ -28,8 +27,8 @@ export function Hero() {
         <HeroPricing />
       </div>
 
-      {/* Why This Exists */}
       <div className="w-full space-y-12 mb-16">
+        {/* Why This Exists 
         <div className="space-y-4">
           <h2 className="text-2xl font-medium text-foreground">
             why this exists
@@ -40,7 +39,7 @@ export function Hero() {
             monthly subscription. you get speed and transparency. i fund
             science.
           </p>
-        </div>
+        </div>*/}
 
         {/* What You Get */}
         <div className="grid md:grid-cols-2 gap-12">
@@ -118,7 +117,7 @@ export function Hero() {
         </div>
       </div>
 
-      {/* How It Works */}
+      {/* How It Works 
       <div className="w-full space-y-8 mb-16">
         <h2 className="text-2xl font-medium text-foreground">how it works:</h2>
 
@@ -143,9 +142,7 @@ export function Hero() {
             <span className="deploy-anxiety">we ship it. everyone claps.</span>
           </div>
         </div>
-      </div>
-
-      <Memes />
+      </div>*/}
     </div>
   );
 }
