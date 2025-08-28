@@ -176,7 +176,7 @@ export function TransparencyRevenue() {
               {revenue.subscribers}
             </div>
             <p className="text-xs text-muted-foreground font-mono mt-1">
-              → $790/mo each
+              → $900/mo each
             </p>
           </CardContent>
         </Card>

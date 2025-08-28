@@ -11,7 +11,7 @@ export function Hero() {
             <Revenues />
           </div>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-normal text-foreground leading-tight">
-            need a website? hire a broke medtech founder
+            world-class websites for saas and startups
             <span className="text-teal-300">.</span>
           </h1>
 

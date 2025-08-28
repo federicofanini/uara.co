@@ -170,12 +170,11 @@ export function WallOfLove() {
           <div className="space-y-2">
             <div className="flex items-center gap-2 terminal-prompt">
               <span className="text-muted-foreground">1.</span>
-              <span>subscribe to the broke founder plan.</span>
+              <span>subscribe to the plan.</span>
             </div>
             <div className="flex items-center gap-2 terminal-prompt">
               <span className="text-muted-foreground">2.</span>
-              <span>i build your website like my startup depends on it.</span>
-              <span className="caffeine-level-high"></span>
+              <span>i build your website.</span>
             </div>
             <div className="flex items-center gap-2 terminal-prompt">
               <span className="text-muted-foreground">3.</span>

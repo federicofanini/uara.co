@@ -10,8 +10,6 @@ export function Rules() {
         </h2>
 
         <div className="space-y-6">
-          <h3 className="text-xl font-medium text-foreground">the promise</h3>
-
           <div className="code-block space-y-2">
             <div className="flex items-center gap-2 terminal-prompt">
               <span className="text-muted-foreground">1.</span>
@@ -209,9 +207,7 @@ export function Rules() {
           <div className="flex items-start gap-3">
             <span className="text-red-400 font-mono text-sm mt-1">◇</span>
             <div>
-              <p className="text-sm font-medium">
-                emergency? dm me on x with a meme.
-              </p>
+              <p className="text-sm font-medium">emergency? dm me on x.</p>
             </div>
           </div>
         </div>

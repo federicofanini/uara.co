@@ -56,8 +56,8 @@ export const trackMVPClick = (source?: string) => {
 export const trackFounderPlanClick = (source?: string) => {
   op.track(EVENTS.PRICING_FOUNDER_PLAN_CLICK, {
     product: PRODUCTS.FOUNDER_PLAN,
-    price: 790,
-    original_price: 1490,
+    price: 900,
+    original_price: 2000,
     billing_cycle: "monthly",
     discount: 47, // 47% off
     source: source || "pricing_page",

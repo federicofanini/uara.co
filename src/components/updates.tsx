@@ -23,7 +23,7 @@ export function Updates() {
       date: "aug 24",
       status: "done",
       title: "pricing",
-      description: "$790/mo → rent money for me, science money for medtech.",
+      description: "$900/mo → rent money for me, science money for medtech.",
     },
     {
       date: "aug 23",

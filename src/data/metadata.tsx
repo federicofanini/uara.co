@@ -144,7 +144,7 @@ export const DATA = {
       ogImage: "/og/opengraph-image.png",
     },
     pricing: {
-      title: "pricing — $790/mo subscription websites | uara",
+      title: "pricing — $900/mo subscription websites | uara",
       description:
         "One plan. No upsells. Unlimited requests, one active at a time, 2–3 day turnaround. Pause or cancel anytime. Netflix vibes, but I actually ship.",
       ogImage: "/og/opengraph-image.png",
@@ -217,7 +217,7 @@ export const DATA = {
       offers: {
         "@type": "Offer",
         priceCurrency: "EUR",
-        price: "790.00",
+        price: "900.00",
         availability: "https://schema.org/InStock",
         url: "https://uara.co/pricing",
       },

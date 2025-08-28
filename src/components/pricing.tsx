@@ -44,7 +44,7 @@ export function Pricing() {
       {/* Header */}
       <div className="text-center space-y-4">
         <h2 className="text-2xl md:text-3xl font-medium text-foreground">
-          one plan. infinite copium<span className="text-teal-300">.</span>
+          two plans. infinite copium<span className="text-teal-300">.</span>
         </h2>
         <div className="flex flex-col gap-2 items-center justify-center">
           <Badge variant="secondary" className="text-xs font-mono">
@@ -166,10 +166,10 @@ export function Pricing() {
                 <div className="text-right">
                   <div className="flex items-baseline gap-2">
                     <span className="text-sm text-muted-foreground line-through">
-                      $1490
+                      $2000
                     </span>
                     <span className="text-2xl font-medium text-foreground">
-                      $790
+                      $900
                     </span>
                     <span className="text-sm text-muted-foreground">/mo</span>
                   </div>
