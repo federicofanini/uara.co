@@ -1,0 +1,319 @@
+---
+title: "Build a SaaS from Zero: Next.js + Supabase in 2025"
+publishedAt: "2025-08-28"
+summary: "Complete guide to building a production-ready SaaS using Next.js App Router, Supabase, Prisma, and Stripe. From idea to deployment in record time."
+tags: ["SaaS", "Next.js", "Supabase", "Prisma", "Startup"]
+author: "Federico Fan"
+draft: false
+---
+
+# Build a SaaS from Zero: Next.js + Supabase in 2025
+
+Building a SaaS in 2025 is **faster than ever**. With the right stack, you can go from idea to paying customers in weeks, not months.
+
+This is the exact blueprint I use to build production-ready SaaS products for clients at **uara** — and it's proven to work.
+
+---
+
+## The Stack That Just Works
+
+- **Next.js App Router** → Full-stack React with server components
+- **Supabase** → PostgreSQL database + real-time + auth
+- **Prisma** → Type-safe database ORM
+- **Tailwind + Shadcn** → Beautiful UI components
+- **Stripe** → Payment processing that scales
+- **Vercel** → Deploy in seconds
+
+This isn't just trendy tech — it's **battle-tested** in production.
+
+---
+
+## Project Structure That Scales
+
+```bash
+src/
+  app/
+    (auth)/
+      sign-in/page.tsx
+      sign-up/page.tsx
+    (dashboard)/
+      dashboard/
+        page.tsx
+        settings/page.tsx
+        billing/page.tsx
+    api/
+      stripe/
+        webhooks/route.ts
+      auth/
+        callback/route.ts
+  components/
+    ui/                # Shadcn components
+    auth/              # Auth forms
+    dashboard/         # Dashboard UI
+  lib/
+    supabase.ts        # Supabase client
+    stripe.ts          # Stripe config
+    prisma.ts          # Database client
+```
+
+Clean. Organized. **Maintainable**.
+
+---
+
+## Database Schema (Prisma)
+
+Start with this foundation:
+
+```prisma
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+
+  // Subscription
+  stripeCustomerId     String?
+  stripeSubscriptionId String?
+  stripePriceId        String?
+  stripeCurrentPeriodEnd DateTime?
+}
+
+model Post {
+  id        String   @id @default(cuid())
+  title     String
+  content   String?
+  userId    String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}
+```
+
+**Pro tip**: Always start simple. Add complexity as you grow.
+
+---
+
+## Authentication in 3 Steps
+
+### 1. Supabase Setup
+
+```typescript
+import { createClient } from "@supabase/supabase-js";
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+
+export const supabase = createClient(supabaseUrl, supabaseKey);
+```
+
+### 2. Auth Component
+
+```typescript
+export function SignInForm() {
+  const [email, setEmail] = useState("");
+
+  const handleSignIn = async () => {
+    await supabase.auth.signInWithOtp({ email });
+  };
+
+  return <Button onClick={handleSignIn}>Sign in with Email</Button>;
+}
+```
+
+### 3. Protected Routes
+
+```typescript
+export default async function DashboardPage() {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/sign-in");
+  }
+
+  return <Dashboard user={user} />;
+}
+```
+
+**Magic link auth** = zero password headaches.
+
+---
+
+## Payments That Convert
+
+### Stripe Integration
+
+```typescript
+// lib/stripe.ts
+import Stripe from "stripe";
+
+export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: "2023-10-16",
+});
+
+// Create checkout session
+export async function createCheckoutSession(userId: string) {
+  return await stripe.checkout.sessions.create({
+    mode: "subscription",
+    payment_method_types: ["card"],
+    line_items: [
+      {
+        price: process.env.STRIPE_PRICE_ID,
+        quantity: 1,
+      },
+    ],
+    success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`,
+    cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/pricing`,
+    client_reference_id: userId,
+  });
+}
+```
+
+### Webhook Handler
+
+```typescript
+// app/api/stripe/webhooks/route.ts
+export async function POST(req: Request) {
+  const sig = headers().get("stripe-signature")!;
+  const body = await req.text();
+
+  const event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
+
+  if (event.type === "checkout.session.completed") {
+    // Update user subscription in database
+    await updateUserSubscription(event.data.object);
+  }
+
+  return new Response("OK");
+}
+```
+
+**Always use webhooks** — they're your source of truth.
+
+---
+
+## UI Components That Ship Fast
+
+Use **Shadcn** for instant professional UI:
+
+```bash
+npx shadcn-ui@latest add button card form input
+```
+
+Then build like this:
+
+```typescript
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+
+export function PricingCard() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Pro Plan</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <p className="text-3xl font-bold">$29/mo</p>
+        <Button className="w-full mt-4">Start Free Trial</Button>
+      </CardContent>
+    </Card>
+  );
+}
+```
+
+**Result**: Beautiful components in minutes, not hours.
+
+---
+
+## Deployment on Vercel
+
+1. **Connect GitHub** → Auto-deploy on push
+2. **Add environment variables** → Database, Stripe, etc.
+3. **Deploy** → Live in 60 seconds
+
+```bash
+# Environment variables you need:
+DATABASE_URL=
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+STRIPE_SECRET_KEY=
+STRIPE_WEBHOOK_SECRET=
+```
+
+---
+
+## Performance Optimization
+
+### Server Components by Default
+
+```typescript
+// This runs on the server
+export default async function Dashboard() {
+  const posts = await prisma.post.findMany();
+
+  return (
+    <div>
+      {posts.map((post) => (
+        <PostCard key={post.id} post={post} />
+      ))}
+    </div>
+  );
+}
+```
+
+### Client Components When Needed
+
+```typescript
+"use client";
+
+export function InteractiveButton() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <Button onClick={() => setCount(count + 1)}>Clicked {count} times</Button>
+  );
+}
+```
+
+**Rule**: Server by default, client when interactive.
+
+---
+
+## Real-World Metrics
+
+SaaS products I've built with this stack:
+
+- **Time to MVP**: 2-4 weeks
+- **Performance**: 95+ Lighthouse scores
+- **Scalability**: Handles 10k+ users
+- **Cost**: ~$50/month to start
+
+---
+
+## Common Pitfalls to Avoid
+
+1. **Over-engineering** → Start simple, add features later
+2. **Ignoring TypeScript** → Use strict mode from day one
+3. **Skipping tests** → At least test your payment flow
+4. **No error boundaries** → Handle errors gracefully
+5. **Forgetting SEO** → Use Next.js metadata API
+
+---
+
+## What's Next?
+
+This stack gets you **80% of the way** to a production SaaS. The remaining 20% is:
+
+- Advanced analytics
+- Email marketing integration
+- Multi-tenant architecture
+- Advanced user roles
+
+Want me to build your SaaS with this exact stack? **€900/month** gets you unlimited development requests.
+
+[Get started →](https://uara.co)
+
+---
+
+**P.S.** Building in public works. **Content is still king** in 2025.

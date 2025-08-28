@@ -1,0 +1,625 @@
+---
+title: "Database Design Patterns That Scale: A Startup's Guide to Prisma + PostgreSQL"
+publishedAt: "2025-08-28"
+summary: "Master database design patterns that grow with your startup. From MVP to millions of users using Prisma, PostgreSQL, and battle-tested schemas."
+tags: ["Database", "Prisma", "PostgreSQL", "Startup", "Scaling"]
+author: "Federico Fan"
+draft: false
+---
+
+# Database Design Patterns That Scale: A Startup's Guide to Prisma + PostgreSQL
+
+Your database design decisions **make or break** your startup's ability to scale. Get it right from day one, and you'll handle millions of users. Get it wrong, and you'll spend months refactoring.
+
+Here are the **battle-tested patterns** I use for every SaaS project at **uara**.
+
+---
+
+## The Foundation: PostgreSQL + Prisma
+
+**Why PostgreSQL?**
+
+- ACID compliance → Data integrity
+- JSON support → Flexible schemas
+- Full-text search → Built-in search
+- Horizontal scaling → Future-proof
+- Rich ecosystem → Tons of tools
+
+**Why Prisma?**
+
+- Type safety → Fewer runtime errors
+- Auto-migrations → Safe schema changes
+- Query optimization → Better performance
+- Developer experience → Faster development
+
+---
+
+## Schema Patterns That Scale
+
+### 1. User Management Schema
+
+```prisma
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  avatar    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Soft delete instead of hard delete
+  deletedAt DateTime?
+
+  // User preferences as JSON
+  preferences Json?
+
+  // Relationships
+  accounts     Account[]
+  sessions     Session[]
+  posts        Post[]
+  comments     Comment[]
+  subscriptions Subscription[]
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+```
+
+**Key patterns**:
+
+- **CUID** for external-facing IDs
+- **Soft deletes** for data recovery
+- **JSON fields** for flexible data
+- **Proper indexes** for performance
+
+---
+
+### 2. Multi-Tenant SaaS Schema
+
+```prisma
+model Organization {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  logo      String?
+  settings  Json?
+
+  // Subscription info
+  planId    String?
+  seats     Int      @default(1)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationships
+  members   OrganizationMember[]
+  projects  Project[]
+
+  @@map("organizations")
+}
+
+model OrganizationMember {
+  id             String   @id @default(cuid())
+  organizationId String
+  userId         String
+  role           Role     @default(MEMBER)
+
+  createdAt DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, userId])
+  @@map("organization_members")
+}
+
+enum Role {
+  OWNER
+  ADMIN
+  MEMBER
+  VIEWER
+}
+
+model Project {
+  id             String   @id @default(cuid())
+  name           String
+  description    String?
+  organizationId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  tasks        Task[]
+
+  @@map("projects")
+}
+```
+
+**Multi-tenancy benefits**:
+
+- **Row-level security** with organization filtering
+- **Flexible permissions** with role-based access
+- **Data isolation** between organizations
+- **Easy billing** per organization
+
+---
+
+### 3. Content Management Schema
+
+```prisma
+model Post {
+  id          String      @id @default(cuid())
+  title       String
+  slug        String      @unique
+  content     String?
+  excerpt     String?
+
+  // SEO fields
+  metaTitle       String?
+  metaDescription String?
+
+  // Publishing
+  status      PostStatus  @default(DRAFT)
+  publishedAt DateTime?
+
+  // Media
+  featuredImage String?
+
+  // Relationships
+  authorId    String
+  categoryId  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  author   User      @relation(fields: [authorId], references: [id])
+  category Category? @relation(fields: [categoryId], references: [id])
+  tags     PostTag[]
+  comments Comment[]
+
+  // Full-text search
+  @@map("posts")
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+model Category {
+  id          String @id @default(cuid())
+  name        String
+  slug        String @unique
+  description String?
+
+  posts Post[]
+
+  @@map("categories")
+}
+
+model Tag {
+  id   String @id @default(cuid())
+  name String @unique
+  slug String @unique
+
+  posts PostTag[]
+
+  @@map("tags")
+}
+
+model PostTag {
+  postId String
+  tagId  String
+
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag  Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([postId, tagId])
+  @@map("post_tags")
+}
+```
+
+**Content patterns**:
+
+- **Slugs** for SEO-friendly URLs
+- **Status enum** for publishing workflow
+- **Many-to-many** relationships for tags
+- **SEO fields** built into the schema
+
+---
+
+### 4. E-commerce/Subscription Schema
+
+```prisma
+model Product {
+  id          String  @id @default(cuid())
+  name        String
+  description String?
+
+  // Pricing
+  prices      Price[]
+
+  // Metadata
+  metadata    Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("products")
+}
+
+model Price {
+  id              String      @id @default(cuid())
+  productId       String
+
+  // Stripe integration
+  stripeId        String?     @unique
+
+  // Pricing details
+  unitAmount      Int         // Amount in cents
+  currency        String      @default("usd")
+  interval        PriceInterval?
+  intervalCount   Int?
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  subscriptions Subscription[]
+
+  @@map("prices")
+}
+
+enum PriceInterval {
+  MONTH
+  YEAR
+}
+
+model Subscription {
+  id                     String               @id @default(cuid())
+  userId                 String
+
+  // Stripe integration
+  stripeSubscriptionId   String?              @unique
+  stripeCustomerId       String?
+  stripePriceId          String?
+  stripeCurrentPeriodEnd DateTime?
+
+  // Subscription details
+  status                 SubscriptionStatus
+  priceId                String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user  User  @relation(fields: [userId], references: [id])
+  price Price @relation(fields: [priceId], references: [id])
+
+  @@map("subscriptions")
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELED
+  INCOMPLETE
+  INCOMPLETE_EXPIRED
+  PAST_DUE
+  TRIALING
+  UNPAID
+}
+```
+
+**E-commerce patterns**:
+
+- **Stripe integration** fields for webhooks
+- **Price versioning** with separate Price model
+- **Subscription states** matching Stripe exactly
+- **Cents-based pricing** to avoid floating point issues
+
+---
+
+## Performance Optimization
+
+### 1. Strategic Indexing
+
+```prisma
+model Post {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  authorId  String
+  status    PostStatus
+  publishedAt DateTime?
+  createdAt DateTime @default(now())
+
+  author User @relation(fields: [authorId], references: [id])
+
+  // Composite indexes for common queries
+  @@index([authorId, status])
+  @@index([publishedAt, status])
+  @@index([createdAt])
+  @@map("posts")
+}
+```
+
+### 2. Query Optimization
+
+```typescript
+// ❌ Bad: N+1 query problem
+const posts = await prisma.post.findMany();
+for (const post of posts) {
+  const author = await prisma.user.findUnique({
+    where: { id: post.authorId },
+  });
+}
+
+// ✅ Good: Use include to fetch related data
+const posts = await prisma.post.findMany({
+  include: {
+    author: {
+      select: { id: true, name: true, avatar: true },
+    },
+    category: true,
+    _count: {
+      select: { comments: true },
+    },
+  },
+});
+```
+
+### 3. Pagination Patterns
+
+```typescript
+// Cursor-based pagination for large datasets
+export async function getPosts(cursor?: string, limit = 10) {
+  return await prisma.post.findMany({
+    take: limit,
+    ...(cursor && {
+      skip: 1,
+      cursor: { id: cursor },
+    }),
+    orderBy: { createdAt: "desc" },
+    include: {
+      author: { select: { name: true, avatar: true } },
+    },
+  });
+}
+
+// Offset pagination for smaller datasets with page numbers
+export async function getPostsWithOffset(page = 1, limit = 10) {
+  const skip = (page - 1) * limit;
+
+  const [posts, total] = await Promise.all([
+    prisma.post.findMany({
+      skip,
+      take: limit,
+      orderBy: { createdAt: "desc" },
+    }),
+    prisma.post.count(),
+  ]);
+
+  return {
+    posts,
+    total,
+    pages: Math.ceil(total / limit),
+    currentPage: page,
+  };
+}
+```
+
+---
+
+## Data Validation Patterns
+
+### 1. Prisma + Zod Integration
+
+```typescript
+import { z } from "zod";
+
+// Schema validation
+export const createUserSchema = z.object({
+  email: z.string().email(),
+  name: z.string().min(2).max(50),
+  avatar: z.string().url().optional(),
+  preferences: z
+    .object({
+      theme: z.enum(["light", "dark"]),
+      notifications: z.boolean(),
+    })
+    .optional(),
+});
+
+export type CreateUser = z.infer<typeof createUserSchema>;
+
+// API route with validation
+export async function POST(request: Request) {
+  const body = await request.json();
+
+  // Validate input
+  const validatedData = createUserSchema.parse(body);
+
+  // Create user
+  const user = await prisma.user.create({
+    data: validatedData,
+  });
+
+  return Response.json(user);
+}
+```
+
+### 2. Database Constraints
+
+```prisma
+model User {
+  id    String @id @default(cuid())
+  email String @unique
+  name  String
+  age   Int?
+
+  // Database-level constraints
+  @@check(age >= 13, name: "age_minimum")
+  @@check(length(name) >= 2, name: "name_minimum_length")
+}
+```
+
+---
+
+## Migration Strategies
+
+### 1. Safe Schema Changes
+
+```prisma
+// Step 1: Add optional column
+model User {
+  id       String  @id @default(cuid())
+  email    String  @unique
+  name     String
+  fullName String? // New optional field
+}
+```
+
+```sql
+-- Step 2: Backfill data
+UPDATE users SET "fullName" = "name" WHERE "fullName" IS NULL;
+```
+
+```prisma
+// Step 3: Make required and remove old field
+model User {
+  id       String @id @default(cuid())
+  email    String @unique
+  fullName String // Now required
+  // Removed: name field
+}
+```
+
+### 2. Zero-Downtime Migrations
+
+```typescript
+// Use transactions for critical operations
+async function migrateUserData() {
+  await prisma.$transaction(async (tx) => {
+    // Step 1: Create new records
+    const users = await tx.user.findMany();
+
+    // Step 2: Transform data
+    const profiles = users.map((user) => ({
+      userId: user.id,
+      bio: user.bio || "",
+      preferences: user.preferences || {},
+    }));
+
+    // Step 3: Insert new data
+    await tx.profile.createMany({
+      data: profiles,
+    });
+  });
+}
+```
+
+---
+
+## Common Anti-Patterns to Avoid
+
+### ❌ Don't: Store JSON Everything
+
+```prisma
+// Bad: Using JSON for structured data
+model User {
+  id   String @id
+  data Json   // Everything goes here
+}
+```
+
+### ✅ Do: Proper Normalization
+
+```prisma
+// Good: Proper relationships
+model User {
+  id      String @id
+  name    String
+  email   String
+  profile Profile?
+  posts   Post[]
+}
+
+model Profile {
+  id     String @id
+  bio    String?
+  avatar String?
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
+}
+```
+
+---
+
+## Monitoring & Optimization
+
+### 1. Query Analytics
+
+```typescript
+// Enable query logging in development
+const prisma = new PrismaClient({
+  log: ["query", "info", "warn", "error"],
+});
+
+// Production monitoring
+const prisma = new PrismaClient({
+  log: [
+    { emit: "event", level: "query" },
+    { emit: "stdout", level: "error" },
+    { emit: "stdout", level: "info" },
+    { emit: "stdout", level: "warn" },
+  ],
+});
+
+prisma.$on("query", (e) => {
+  if (e.duration > 1000) {
+    console.log("Slow query detected:", e.query);
+  }
+});
+```
+
+### 2. Connection Pooling
+
+```typescript
+// For serverless environments
+const prisma = new PrismaClient({
+  datasources: {
+    db: {
+      url: `${process.env.DATABASE_URL}?connection_limit=1&pool_timeout=0`,
+    },
+  },
+});
+```
+
+---
+
+This database design approach has powered SaaS products handling **millions of users** and **billions of records**.
+
+Need help implementing these patterns in your startup? **€900/month** gets you unlimited development with battle-tested schemas.
+
+[Get started →](https://uara.co)
+
+---
+
+**P.S.** Good database design is invisible when it works, but catastrophic when it doesn't. Invest the time upfront.

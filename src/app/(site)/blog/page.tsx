@@ -98,60 +98,54 @@ export default async function BlogPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <section className="max-w-[800px] mx-auto">
-        <div className="flex flex-col gap-2 mb-8">
-          <h1 className="font-medium text-2xl tracking-tighter">
-            Web Development Blog
-          </h1>
-          <p className="text-muted-foreground">
-            In-depth articles on Next.js, React, web performance, and modern
-            development practices. Learn from real-world projects and improve
-            your development skills.
-          </p>
+      <div className="flex flex-col items-center justify-center px-4 py-12 max-w-4xl mx-auto">
+        {/* Blog Header */}
+        <div className="text-center space-y-8 mb-16">
+          <div className="space-y-4">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-normal text-foreground leading-tight">
+              how to build the perfect website
+              <span className="text-teal-300">.</span>
+            </h1>
+            <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+              in-depth articles on next.js, react, web performance, and modern
+              development practices. learn from real-world projects.
+            </p>
+          </div>
         </div>
 
-        <div className="grid gap-8">
-          {posts.map((post, index) => (
-            <article className="group" key={index}>
-              <Link href={`/blog/${post.slug}`} className="font-mono">
-                <div className="rounded-lg border bg-black/80 overflow-hidden">
-                  {/* Terminal Header */}
-                  <div className="flex items-center justify-between px-4 py-2 bg-zinc-900 border-b">
-                    <div className="flex items-center gap-2">
-                      <div className="size-3 rounded-full bg-red-500" />
-                      <div className="size-3 rounded-full bg-yellow-500" />
-                      <div className="size-3 rounded-full bg-green-500" />
-                    </div>
-                    <div className="text-xs text-zinc-400">blog.post</div>
-                    <div className="w-16" /> {/* Spacer to center filename */}
-                  </div>
-
-                  {/* Terminal Content */}
-                  <div className="p-4 group-hover:bg-zinc-900/50 transition-colors">
-                    <div className="flex items-start gap-2 text-green-500">
-                      <span>$</span>
-                      <div className="flex-1">
-                        <div className="text-sm">
-                          <span className="text-blue-400">cat</span>{" "}
-                          <span className="text-zinc-200">
+        {/* Blog Posts */}
+        <div className="w-full space-y-12">
+          <div className="space-y-6">
+            <h3 className="text-teal-300">latest posts:</h3>
+            <div className="space-y-6">
+              {posts.map((post, index) => (
+                <article key={index} className="group">
+                  <Link href={`/blog/${post.slug}`}>
+                    <div className="flex items-start gap-3 p-4 rounded-lg border hover:bg-muted/50 transition-colors">
+                      <span className="text-green-400 font-mono text-sm mt-1">
+                        ◇
+                      </span>
+                      <div className="flex-1 space-y-2">
+                        <div>
+                          <h2 className="text-sm font-medium text-foreground group-hover:text-teal-300 transition-colors">
                             {post.metadata.title}
-                          </span>
+                          </h2>
+                          <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                            {post.metadata.summary}
+                          </p>
                         </div>
-                        <p className="mt-2 text-xs text-zinc-400 line-clamp-2">
-                          {post.metadata.summary}
-                        </p>
 
                         {/* Tags */}
                         {post.metadata.tags &&
                           post.metadata.tags.length > 0 && (
-                            <div className="flex flex-wrap gap-1 mt-2">
+                            <div className="flex flex-wrap gap-1">
                               {post.metadata.tags
                                 .slice(0, 3)
                                 .map((tag: string) => (
                                   <Badge
                                     key={tag}
                                     variant="secondary"
-                                    className="text-xs px-2 py-0 h-5 bg-zinc-800 text-zinc-300 hover:bg-zinc-700"
+                                    className="text-xs px-2 py-0 h-4 bg-muted text-muted-foreground"
                                   >
                                     {tag}
                                   </Badge>
@@ -159,32 +153,29 @@ export default async function BlogPage() {
                             </div>
                           )}
 
-                        <div className="mt-2 flex items-center justify-between text-xs text-zinc-500">
-                          <span>
-                            Published:{" "}
-                            <time dateTime={post.metadata.publishedAt}>
-                              {new Date(
-                                post.metadata.publishedAt
-                              ).toLocaleDateString("en-US", {
-                                month: "short",
-                                day: "numeric",
-                                year: "numeric",
-                              })}
-                            </time>
-                          </span>
+                        <div className="flex items-center justify-between text-xs text-muted-foreground">
+                          <time dateTime={post.metadata.publishedAt}>
+                            {new Date(
+                              post.metadata.publishedAt
+                            ).toLocaleDateString("en-US", {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
+                            })}
+                          </time>
                           {post.metadata.readingTime && (
-                            <span>{post.metadata.readingTime}</span>
+                            <span>→ {post.metadata.readingTime}</span>
                           )}
                         </div>
                       </div>
                     </div>
-                  </div>
-                </div>
-              </Link>
-            </article>
-          ))}
+                  </Link>
+                </article>
+              ))}
+            </div>
+          </div>
         </div>
-      </section>
+      </div>
     </>
   );
 }

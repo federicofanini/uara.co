@@ -23,7 +23,7 @@ export function Menu() {
         type="button"
         className="items-center gap-2 text-muted-foreground outline-none text-sm hidden md:flex"
       >
-        others
+        more
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="end"

@@ -1,0 +1,695 @@
+---
+title: "DevOps for Indie Hackers: Deploy Like a Pro Without the Overhead"
+publishedAt: "2025-08-28"
+summary: "Simple, cost-effective deployment strategies for solo developers. From Vercel to production monitoring, build reliable infrastructure without breaking the bank."
+tags: ["DevOps", "Deployment", "Indie Hacker", "Infrastructure", "Vercel"]
+author: "Federico Fan"
+draft: false
+---
+
+# DevOps for Indie Hackers: Deploy Like a Pro Without the Overhead
+
+As an **indie hacker**, you don't need enterprise-grade DevOps complexity. You need **simple, reliable, and cheap** infrastructure that just works.
+
+Here's the **minimal DevOps stack** that powers successful solo projects and bootstrapped startups.
+
+---
+
+## The Indie Hacker's DevOps Stack
+
+**Core Philosophy**: Maximum reliability, minimum complexity, lowest cost.
+
+- **Vercel** → Frontend deployment and serverless functions
+- **Supabase** → Database and backend services
+- **GitHub Actions** → CI/CD automation
+- **Upstash** → Redis and rate limiting
+- **Sentry** → Error monitoring
+- **Simple Analytics** → Privacy-friendly analytics
+
+**Total cost**: ~$20-50/month for most indie projects.
+
+---
+
+## Deployment Architecture
+
+### 1. Frontend: Vercel for Everything
+
+```bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Deploy your Next.js app
+vercel
+
+# Production deployment
+vercel --prod
+```
+
+**Why Vercel?**
+
+- **Zero config** → Deploy with git push
+- **Global CDN** → Fast worldwide
+- **Serverless functions** → Backend logic included
+- **Preview deployments** → Test before production
+- **Custom domains** → Professional URLs
+
+### 2. Environment Configuration
+
+```bash
+# .env.example
+DATABASE_URL=postgresql://...
+NEXT_PUBLIC_SUPABASE_URL=https://...
+NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+STRIPE_SECRET_KEY=sk_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+SENTRY_DSN=https://...
+UPSTASH_REDIS_REST_URL=https://...
+```
+
+```typescript
+// lib/env.ts - Type-safe environment variables
+import { z } from "zod";
+
+const envSchema = z.object({
+  DATABASE_URL: z.string().url(),
+  NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string(),
+  STRIPE_SECRET_KEY: z.string(),
+  NODE_ENV: z.enum(["development", "test", "production"]),
+});
+
+export const env = envSchema.parse(process.env);
+```
+
+---
+
+## CI/CD with GitHub Actions
+
+### 1. Automated Testing & Deployment
+
+```yaml
+# .github/workflows/deploy.yml
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run type checking
+        run: npm run type-check
+
+      - name: Run linting
+        run: npm run lint
+
+      - name: Run tests
+        run: npm run test
+
+      - name: Build project
+        run: npm run build
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: "--prod"
+```
+
+### 2. Database Migrations
+
+```yaml
+# .github/workflows/migrate.yml
+name: Database Migration
+
+on:
+  push:
+    branches: [main]
+    paths: ["prisma/schema.prisma", "prisma/migrations/**"]
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run migrations
+        run: npx prisma migrate deploy
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      - name: Generate Prisma client
+        run: npx prisma generate
+```
+
+---
+
+## Monitoring & Observability
+
+### 1. Error Tracking with Sentry
+
+```typescript
+// lib/sentry.ts
+import * as Sentry from "@sentry/nextjs";
+
+Sentry.init({
+  dsn: process.env.SENTRY_DSN,
+  tracesSampleRate: 1.0,
+  debug: false,
+  environment: process.env.NODE_ENV,
+});
+
+export { Sentry };
+```
+
+```typescript
+// Sentry configuration
+// sentry.client.config.ts
+import * as Sentry from "@sentry/nextjs";
+
+Sentry.init({
+  dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
+  integrations: [new Sentry.BrowserTracing()],
+  tracesSampleRate: 1.0,
+  beforeSend(event) {
+    // Filter out common noise
+    if (event.exception) {
+      const error = event.exception.values?.[0];
+      if (error?.type === "ChunkLoadError") {
+        return null; // Ignore chunk load errors
+      }
+    }
+    return event;
+  },
+});
+```
+
+### 2. Application Monitoring
+
+```typescript
+// lib/monitoring.ts
+import { Sentry } from "./sentry";
+
+export function trackEvent(
+  eventName: string,
+  properties?: Record<string, any>
+) {
+  // Simple analytics tracking
+  if (typeof window !== "undefined" && window.sa_event) {
+    window.sa_event(eventName, properties);
+  }
+
+  // Sentry breadcrumb for debugging
+  Sentry.addBreadcrumb({
+    message: eventName,
+    level: "info",
+    data: properties,
+  });
+}
+
+export function trackError(error: Error, context?: Record<string, any>) {
+  console.error("Application error:", error);
+
+  Sentry.captureException(error, {
+    tags: context,
+  });
+}
+
+// Usage in components
+export function useTracking() {
+  const trackClick = (element: string) => {
+    trackEvent("button_click", { element });
+  };
+
+  const trackPageView = (page: string) => {
+    trackEvent("page_view", { page });
+  };
+
+  return { trackClick, trackPageView };
+}
+```
+
+### 3. Performance Monitoring
+
+```typescript
+// lib/performance.ts
+export function measurePerformance() {
+  if (typeof window === "undefined") return;
+
+  // Core Web Vitals
+  import("web-vitals").then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
+    getCLS((metric) => {
+      trackEvent("core_web_vital", {
+        name: metric.name,
+        value: metric.value,
+        rating: metric.rating,
+      });
+    });
+
+    getFID((metric) => {
+      trackEvent("core_web_vital", {
+        name: metric.name,
+        value: metric.value,
+        rating: metric.rating,
+      });
+    });
+
+    getFCP((metric) => {
+      trackEvent("core_web_vital", {
+        name: metric.name,
+        value: metric.value,
+        rating: metric.rating,
+      });
+    });
+
+    getLCP((metric) => {
+      trackEvent("core_web_vital", {
+        name: metric.name,
+        value: metric.value,
+        rating: metric.rating,
+      });
+    });
+
+    getTTFB((metric) => {
+      trackEvent("core_web_vital", {
+        name: metric.name,
+        value: metric.value,
+        rating: metric.rating,
+      });
+    });
+  });
+}
+
+// Add to app layout
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  useEffect(() => {
+    measurePerformance();
+  }, []);
+
+  return (
+    <html>
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+---
+
+## Database Management
+
+### 1. Connection Pooling for Serverless
+
+```typescript
+// lib/prisma.ts
+import { PrismaClient } from "@prisma/client";
+
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined;
+};
+
+export const prisma =
+  globalForPrisma.prisma ??
+  new PrismaClient({
+    log: ["query"],
+    datasources: {
+      db: {
+        url: process.env.DATABASE_URL,
+      },
+    },
+  });
+
+if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+
+// Graceful shutdown
+process.on("beforeExit", async () => {
+  await prisma.$disconnect();
+});
+```
+
+### 2. Database Backup Strategy
+
+```bash
+#!/bin/bash
+# scripts/backup-db.sh
+
+# Set variables
+BACKUP_DIR="./backups"
+TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+BACKUP_FILE="$BACKUP_DIR/backup_$TIMESTAMP.sql"
+
+# Create backup directory
+mkdir -p $BACKUP_DIR
+
+# Create backup
+pg_dump $DATABASE_URL > $BACKUP_FILE
+
+# Compress backup
+gzip $BACKUP_FILE
+
+# Upload to cloud storage (optional)
+# aws s3 cp $BACKUP_FILE.gz s3://your-bucket/backups/
+
+echo "Backup completed: $BACKUP_FILE.gz"
+```
+
+```yaml
+# .github/workflows/backup.yml
+name: Database Backup
+
+on:
+  schedule:
+    - cron: "0 2 * * *" # Daily at 2 AM UTC
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install PostgreSQL client
+        run: sudo apt-get install postgresql-client
+
+      - name: Create backup
+        run: |
+          pg_dump $DATABASE_URL | gzip > backup_$(date +%Y%m%d).sql.gz
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      - name: Upload backup
+        uses: actions/upload-artifact@v3
+        with:
+          name: database-backup
+          path: backup_*.sql.gz
+```
+
+---
+
+## Security Best Practices
+
+### 1. Environment Security
+
+```typescript
+// middleware.ts - Rate limiting
+import { NextRequest, NextResponse } from "next/server";
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
+
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL!,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+});
+
+const ratelimit = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(10, "10 s"),
+});
+
+export async function middleware(request: NextRequest) {
+  // Rate limit API routes
+  if (request.nextUrl.pathname.startsWith("/api")) {
+    const ip = request.ip ?? "127.0.0.1";
+    const { success } = await ratelimit.limit(ip);
+
+    if (!success) {
+      return new NextResponse("Too Many Requests", { status: 429 });
+    }
+  }
+
+  return NextResponse.next();
+}
+
+export const config = {
+  matcher: "/api/:path*",
+};
+```
+
+### 2. Security Headers
+
+```typescript
+// next.config.ts
+const nextConfig = {
+  async headers() {
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          {
+            key: "X-Frame-Options",
+            value: "DENY",
+          },
+          {
+            key: "X-Content-Type-Options",
+            value: "nosniff",
+          },
+          {
+            key: "Referrer-Policy",
+            value: "origin-when-cross-origin",
+          },
+          {
+            key: "Strict-Transport-Security",
+            value: "max-age=31536000; includeSubDomains",
+          },
+        ],
+      },
+    ];
+  },
+};
+```
+
+---
+
+## Cost Optimization
+
+### 1. Resource Monitoring
+
+```typescript
+// lib/cost-monitoring.ts
+export function trackResourceUsage() {
+  // Monitor Vercel function executions
+  const functionMetrics = {
+    executions: process.env.VERCEL_FUNCTION_EXECUTIONS || 0,
+    duration: process.env.VERCEL_FUNCTION_DURATION || 0,
+  };
+
+  // Monitor database connections
+  const dbMetrics = {
+    activeConnections: prisma.$pool?.totalConnections || 0,
+    queryCount: prisma.$metrics?.queries || 0,
+  };
+
+  // Alert if approaching limits
+  if (functionMetrics.executions > 900000) {
+    // 90% of free tier
+    trackEvent("cost_alert", {
+      type: "vercel_functions",
+      usage: functionMetrics.executions,
+      limit: 1000000,
+    });
+  }
+
+  return { functionMetrics, dbMetrics };
+}
+```
+
+### 2. Optimization Strategies
+
+```typescript
+// Optimize database queries
+export async function getOptimizedPosts() {
+  // Use connection pooling
+  return await prisma.post.findMany({
+    select: {
+      id: true,
+      title: true,
+      summary: true,
+      publishedAt: true,
+      author: {
+        select: {
+          name: true,
+          avatar: true,
+        },
+      },
+    },
+    take: 10,
+    orderBy: { publishedAt: "desc" },
+  });
+}
+
+// Cache expensive operations
+import { unstable_cache } from "next/cache";
+
+export const getCachedStats = unstable_cache(
+  async () => {
+    return await prisma.user.count();
+  },
+  ["user-count"],
+  { revalidate: 3600 } // Cache for 1 hour
+);
+```
+
+---
+
+## Debugging & Troubleshooting
+
+### 1. Local Development Setup
+
+```bash
+# package.json scripts
+{
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "type-check": "tsc --noEmit",
+    "db:migrate": "prisma migrate dev",
+    "db:reset": "prisma migrate reset",
+    "db:seed": "tsx prisma/seed.ts",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "analyze": "ANALYZE=true next build"
+  }
+}
+```
+
+### 2. Debugging Tools
+
+```typescript
+// lib/debug.ts
+export function debugLog(message: string, data?: any) {
+  if (process.env.NODE_ENV === "development") {
+    console.log(`🐛 ${message}`, data);
+  }
+}
+
+export function performanceLog(label: string, fn: Function) {
+  if (process.env.NODE_ENV === "development") {
+    console.time(label);
+    const result = fn();
+    console.timeEnd(label);
+    return result;
+  }
+  return fn();
+}
+
+// Usage
+export async function getPostsWithDebug() {
+  return performanceLog("Get Posts Query", async () => {
+    const posts = await prisma.post.findMany();
+    debugLog("Posts fetched", { count: posts.length });
+    return posts;
+  });
+}
+```
+
+---
+
+## Scaling Strategies
+
+### 1. When to Scale Up
+
+```typescript
+// Monitor key metrics for scaling decisions
+const scalingMetrics = {
+  // Vercel function timeouts
+  functionTimeouts: 0, // Alert if > 10% of requests
+
+  // Database connection pool exhaustion
+  dbConnectionsMaxed: 0, // Alert if hitting limits
+
+  // Response times
+  averageResponseTime: 0, // Alert if > 2s
+
+  // Error rates
+  errorRate: 0, // Alert if > 1%
+};
+
+// Auto-scaling triggers
+if (scalingMetrics.averageResponseTime > 2000) {
+  // Consider database optimization or caching
+  trackEvent("scaling_alert", {
+    type: "slow_response",
+    value: scalingMetrics.averageResponseTime,
+  });
+}
+```
+
+### 2. Migration Path
+
+```typescript
+// Gradual migration strategy
+const migrationPlan = {
+  phase1: "Optimize existing Vercel setup",
+  phase2: "Add Redis caching layer",
+  phase3: "Consider dedicated database",
+  phase4: "Move to containerized deployment",
+  phase5: "Multi-region deployment",
+};
+
+// Cost thresholds for each phase
+const costThresholds = {
+  vercelOptimization: 100, // $100/month
+  redisCaching: 200, // $200/month
+  dedicatedDB: 500, // $500/month
+  containers: 1000, // $1000/month
+  multiRegion: 2000, // $2000/month
+};
+```
+
+---
+
+This DevOps setup has powered indie projects from **$0 to $100k+ ARR** without a dedicated ops team.
+
+Need this infrastructure implemented for your project? **€900/month** gets you production-ready DevOps.
+
+[Get started →](https://uara.co)
+
+---
+
+**P.S.** Great infrastructure is invisible when it works. Set it up right once, then focus on building your product.

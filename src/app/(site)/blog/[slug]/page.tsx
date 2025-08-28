@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
+import { MarkdownParser } from "@/components/markdown-parser";
 
 export async function generateStaticParams() {
   const posts = await getBlogPosts();
@@ -140,53 +141,46 @@ export default async function Blog({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
 
-        <div className="max-w-[800px] mx-auto">
+        <div className="max-w-4xl mx-auto px-4 py-12">
           {/* Breadcrumbs */}
-          <nav className="mb-8 text-sm">
-            <ol className="flex items-center space-x-2 text-muted-foreground">
-              <li>
+          <nav className="mb-12">
+            <div className="flex items-start gap-3">
+              <div className="flex items-center space-x-2 text-xs text-muted-foreground">
                 <Link
                   href="/"
-                  className="hover:text-foreground transition-colors"
+                  className="hover:text-teal-300 transition-colors"
                 >
-                  Home
+                  home
                 </Link>
-              </li>
-              <li>/</li>
-              <li>
+                <span>/</span>
                 <Link
                   href="/blog"
-                  className="hover:text-foreground transition-colors"
+                  className="hover:text-teal-300 transition-colors"
                 >
-                  Blog
+                  blog
                 </Link>
-              </li>
-              <li>/</li>
-              <li className="text-foreground font-medium truncate">
-                {post.metadata.title}
-              </li>
-            </ol>
+                <span>/</span>
+                <span className="text-foreground">
+                  {post.metadata.title.toLowerCase()}
+                </span>
+              </div>
+            </div>
           </nav>
 
-          <article>
+          <article className="space-y-12">
             {/* Article Header */}
-            <header className="mb-8">
-              <h1 className="title font-medium text-3xl md:text-4xl tracking-tighter mb-4">
-                {post.metadata.title}
+            <header className="text-center space-y-6">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-normal text-foreground leading-tight">
+                {post.metadata.title.toLowerCase()}
+                <span className="text-teal-300">.</span>
               </h1>
 
-              {/* Tags */}
-              {post.metadata.tags && post.metadata.tags.length > 0 && (
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {post.metadata.tags.map((tag: string) => (
-                    <Badge key={tag} variant="secondary" className="text-xs">
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-              )}
+              <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+                {post.metadata.summary}
+              </p>
 
-              <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
+              {/* Meta Info */}
+              <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
                 <time dateTime={post.metadata.publishedAt}>
                   {formatDate(post.metadata.publishedAt)}
                 </time>
@@ -195,58 +189,64 @@ export default async function Blog({
                 {post.metadata.author && (
                   <>
                     <span>•</span>
-                    <span>By {post.metadata.author}</span>
+                    <span>{post.metadata.author.toLowerCase()}</span>
                   </>
                 )}
               </div>
 
-              <p className="text-lg text-muted-foreground leading-relaxed">
-                {post.metadata.summary}
-              </p>
+              {/* Tags */}
+              {post.metadata.tags && post.metadata.tags.length > 0 && (
+                <div className="flex flex-wrap gap-2 justify-center">
+                  {post.metadata.tags.map((tag: string) => (
+                    <Badge
+                      key={tag}
+                      variant="secondary"
+                      className="text-xs px-2 py-0 h-4 bg-muted text-muted-foreground"
+                    >
+                      {tag.toLowerCase()}
+                    </Badge>
+                  ))}
+                </div>
+              )}
             </header>
 
             {/* Article Content */}
-            <div
-              className="prose prose-neutral dark:prose-invert max-w-none
-                prose-headings:tracking-tight prose-headings:font-medium
-                prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl
-                prose-p:leading-7 prose-li:leading-7
-                prose-pre:bg-zinc-900 prose-pre:border
-                prose-code:bg-zinc-100 dark:prose-code:bg-zinc-800
-                prose-code:px-1 prose-code:py-0.5 prose-code:rounded
-                prose-code:before:content-none prose-code:after:content-none
-                prose-img:rounded-lg prose-img:border
-                prose-a:text-blue-600 dark:prose-a:text-blue-400
-                prose-a:no-underline hover:prose-a:underline"
-              dangerouslySetInnerHTML={{ __html: post.source }}
+            <MarkdownParser
+              content={post.source}
+              className="mx-auto [&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
             />
           </article>
 
           {/* Related Posts */}
           {otherPosts.length > 0 && (
-            <section className="mt-16 pt-8 border-t">
-              <h2 className="text-xl font-medium tracking-tight mb-6">
-                More Articles
-              </h2>
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <section className="space-y-6 mt-16 pt-12 border-t">
+              <h3 className="text-teal-300">more articles:</h3>
+              <div className="space-y-4">
                 {otherPosts.map((relatedPost) => (
                   <Link
                     key={relatedPost.slug}
                     href={`/blog/${relatedPost.slug}`}
-                    className="group block p-4 rounded-lg border hover:border-muted-foreground/50 transition-colors"
+                    className="group block"
                   >
-                    <h3 className="font-medium text-sm group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
-                      {relatedPost.metadata.title}
-                    </h3>
-                    <p className="text-xs text-muted-foreground mt-2 line-clamp-2">
-                      {relatedPost.metadata.summary}
-                    </p>
-                    <time
-                      dateTime={relatedPost.metadata.publishedAt}
-                      className="text-xs text-muted-foreground mt-2 block"
-                    >
-                      {formatDate(relatedPost.metadata.publishedAt)}
-                    </time>
+                    <div className="flex items-start gap-3 p-4 rounded-lg border hover:bg-muted/50 transition-colors">
+                      <span className="text-green-400 font-mono text-sm mt-1">
+                        ◇
+                      </span>
+                      <div className="flex-1 space-y-1">
+                        <h3 className="text-sm font-medium text-foreground group-hover:text-teal-300 transition-colors line-clamp-2">
+                          {relatedPost.metadata.title.toLowerCase()}
+                        </h3>
+                        <p className="text-xs text-muted-foreground line-clamp-2">
+                          {relatedPost.metadata.summary}
+                        </p>
+                        <time
+                          dateTime={relatedPost.metadata.publishedAt}
+                          className="text-xs text-muted-foreground block"
+                        >
+                          {formatDate(relatedPost.metadata.publishedAt)}
+                        </time>
+                      </div>
+                    </div>
                   </Link>
                 ))}
               </div>

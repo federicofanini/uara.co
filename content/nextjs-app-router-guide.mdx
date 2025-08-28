@@ -1,0 +1,71 @@
+---
+title: "Next.js App Router: The Complete 2025 Guide"
+publishedAt: "2025-08-28"
+summary: "Learn how to master the Next.js App Router in 2025. From folder structure to SEO optimization and deployment on Vercel."
+tags: ["Next.js", "App Router", "React", "Web Development"]
+author: "Federico Fan"
+draft: false
+---
+
+# Next.js App Router: The Complete 2025 Guide
+
+If you're building a modern SaaS or subscription platform, **Next.js App Router** is your new best friend. It gives you cleaner routing, better SEO, and server components out of the box.
+
+This guide covers everything you need to know to master the App Router in 2025.
+
+---
+
+## Why It Matters
+
+- **Server Components** = faster apps with better performance
+- **Folder-based routing** = intuitive file system routing
+- **SEO-ready** = built-in metadata API for better indexing
+- **Streaming support** = progressive page loading for smoother UX
+- **Type safety** = full TypeScript integration out of the box
+
+---
+
+## Example Folder Structure
+
+```bash
+app/
+  layout.tsx          # Root layout component
+  page.tsx           # Home page
+  dashboard/
+    page.tsx         # Dashboard page
+    settings/
+      page.tsx       # Settings page
+```
+
+Each folder = one route. Nest as deep as you like.
+
+---
+
+## SEO With Metadata API
+
+The new App Router makes SEO easier:
+
+```typescript
+export async function generateMetadata() {
+  return {
+    title: "My SaaS Dashboard",
+    description: "Built with Next.js App Router, Supabase, and Prisma.",
+  };
+}
+```
+
+---
+
+## Deployment on Vercel
+
+1. **Push repo** → GitHub
+2. **Connect** → Vercel
+3. **Deploy** → Live in seconds
+
+---
+
+## Final Thoughts
+
+The App Router isn't just a feature — it's the foundation of building web apps in 2025.
+
+Need a SaaS or MVP built with this stack? [€900/month](https://uara.co) — unlimited requests.

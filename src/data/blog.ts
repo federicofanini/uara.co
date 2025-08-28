@@ -28,16 +28,18 @@ export async function markdownToHTML(markdown: string) {
   const p = await unified()
     .use(remarkParse)
     .use(remarkGfm)
-    .use(remarkRehype)
+    .use(remarkRehype, { allowDangerousHtml: true })
     .use(rehypePrettyCode, {
       // https://rehype-pretty.pages.dev/#usage
       theme: {
-        light: "min-light",
-        dark: "min-dark",
+        light: "github-light",
+        dark: "github-dark",
       },
       keepBackground: false,
+      grid: false,
+      defaultLang: "plaintext",
     })
-    .use(rehypeStringify)
+    .use(rehypeStringify, { allowDangerousHtml: true })
     .process(markdown);
 
   return p.toString();
@@ -47,9 +49,9 @@ export async function getPost(slug: string) {
   const filePath = path.join("content", `${slug}.mdx`);
   const source = fs.readFileSync(filePath, "utf-8");
   const { content: rawContent, data: metadata } = matter(source);
-  const content = await markdownToHTML(rawContent);
+  // Return raw markdown content instead of converting to HTML
   return {
-    source: content,
+    source: rawContent,
     metadata,
     slug,
   };
