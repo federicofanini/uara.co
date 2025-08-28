@@ -11,11 +11,19 @@ import { Buttoon } from "./buttoon";
 import Link from "next/link";
 import { products } from "@/lib/products";
 import { Button } from "./ui/button";
+import {
+  trackHeroCTAClick,
+  trackMVPClick,
+  trackFounderPlanClick,
+} from "@/lib/events";
 
 export function HeroPricing() {
   return (
     <div className="items-center gap-3 bg-background/50 backdrop-blur-sm border border-border rounded-none px-4 py-3 max-w-sm mx-auto">
-      <Buttoon className="w-full">
+      <Buttoon
+        className="w-full"
+        onClick={() => trackHeroCTAClick("hero_pricing_section")}
+      >
         <Link href={products[0].link}>get a website for $500</Link>
       </Buttoon>
       <Link href="#pricing" className="text-xs text-muted-foreground font-mono">
@@ -131,7 +139,10 @@ export function Pricing() {
               </div>
 
               <div className="pt-4">
-                <Buttoon className="w-full">
+                <Buttoon
+                  className="w-full"
+                  onClick={() => trackMVPClick("pricing_mvp_section")}
+                >
                   <Link href={products[0].link}>gimme a website</Link>
                 </Buttoon>
                 <p className="text-xs text-muted-foreground text-center mt-2 font-mono">
@@ -224,7 +235,13 @@ export function Pricing() {
               </div>
 
               <div className="pt-4">
-                <Button className="w-full" disabled>
+                <Button
+                  className="w-full"
+                  disabled
+                  onClick={() =>
+                    trackFounderPlanClick("pricing_founder_section")
+                  }
+                >
                   coming soon
                 </Button>
                 <p className="text-xs text-muted-foreground text-center mt-2 font-mono">
