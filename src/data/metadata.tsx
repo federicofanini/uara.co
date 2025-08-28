@@ -141,55 +141,55 @@ export const DATA = {
       title: "uara — need a website? hire a broke founder",
       description:
         "Flat monthly subscription for clean Shadcn + Next.js websites. Unlimited requests (1 active), 2–3 day turnaround, full transparency. Revenue is public. ",
-      ogImage: "/og/home.png",
+      ogImage: "/og/opengraph-image.png",
     },
     pricing: {
       title: "pricing — $790/mo subscription websites | uara",
       description:
         "One plan. No upsells. Unlimited requests, one active at a time, 2–3 day turnaround. Pause or cancel anytime. Netflix vibes, but I actually ship.",
-      ogImage: "/og/pricing.png",
+      ogImage: "/og/opengraph-image.png",
     },
     howItWorks: {
       title: "how it works — unlimited requests, one active | uara",
       description:
         "Add requests → I pick one → code like a caffeinated raccoon → you approve or roast → we ship. 2–3 day turnaround. Simple, fast, funny.",
-      ogImage: "/og/how-it-works.png",
+      ogImage: "/og/opengraph-image.png",
     },
     faq: {
       title: "faq — subscription websites explained (with memes) | uara",
       description:
         "Do you do calls? No, I do commits. What’s a task? A 2–3 day deliverable: page, section, form, speed pass. Cancel or pause anytime.",
-      ogImage: "/og/faq.png",
+      ogImage: "/og/opengraph-image.png",
     },
     transparency: {
       title: "transparency — live revenue & roadmap | uara",
       description:
         "Building in public. Live revenue counter, weekly updates, roadmap, and too much honesty. Every euro funds medtech (and coffee).",
-      ogImage: "/og/transparency.png",
+      ogImage: "/og/opengraph-image.png",
     },
     wallOfLove: {
       title: "wall of love — real (and meme) testimonials | uara",
       description:
         "Testimonials from clients, friends, and trolls. Real screenshots coming soon. Current review: “stop putting memes in commits.” — my friend.",
-      ogImage: "/og/wall-of-love.png",
+      ogImage: "/og/opengraph-image.png",
     },
     request: {
       title: "submit a request — start your first task | uara",
       description:
         "Queue your first website request. Unlimited backlog, one active at a time. I ship in 2–3 days. No Facebook clones, pls.",
-      ogImage: "/og/request.png",
+      ogImage: "/og/opengraph-image.png",
     },
     examples: {
       title: "examples — tiny sites, big energy | uara",
       description:
         "A handful of clean Shadcn + Next.js builds: landing sprints, speed/SEO pass, forms + Stripe button. Simple, fast, shippable.",
-      ogImage: "/og/examples.png",
+      ogImage: "/og/opengraph-image.png",
     },
     changelog: {
       title: "changelog — things shipped (and memes) | uara",
       description:
         "Weekly notes of what shipped for clients and for this site. Speed > polish. Transparency > perfection.",
-      ogImage: "/og/changelog.png",
+      ogImage: "/og/opengraph-image.png",
     },
   },
 
