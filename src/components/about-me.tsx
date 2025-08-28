@@ -98,10 +98,7 @@ export function AboutMe() {
             </div>
             <div className="flex items-center gap-2 terminal-prompt">
               <span className="text-muted-foreground">2.</span>
-              <span className="caffeine-jitter">
-                i code like my startup depends on it.
-              </span>
-              <span className="caffeine-level-critical"></span>
+              <span>i code like my startup depends on it.</span>
             </div>
             <div className="flex items-center gap-2 terminal-prompt">
               <span className="text-muted-foreground">3.</span>
@@ -109,7 +106,7 @@ export function AboutMe() {
             </div>
             <div className="flex items-center gap-2 terminal-prompt">
               <span className="text-muted-foreground">4.</span>
-              <span className="deploy-anxiety">everyone wins.</span>
+              <span>everyone wins.</span>
             </div>
           </div>
 

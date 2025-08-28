@@ -30,9 +30,7 @@ export function Rules() {
             </div>
             <div className="flex items-center gap-2 terminal-prompt">
               <span className="text-muted-foreground">4.</span>
-              <span className="deploy-anxiety">
-                repeat until your site looks less embarrassing.
-              </span>
+              <span>repeat until your site looks less embarrassing.</span>
             </div>
           </div>
         </div>
@@ -159,9 +157,7 @@ export function Rules() {
           </div>
           <div className="flex items-start gap-2 terminal-prompt">
             <span className="text-muted-foreground">→</span>
-            <span className="caffeine-jitter">
-              i code like a caffeinated raccoon.
-            </span>
+            <span>i code like a caffeinated raccoon.</span>
           </div>
           <div className="flex items-start gap-2 terminal-prompt">
             <span className="text-muted-foreground">→</span>
@@ -271,9 +267,7 @@ export function Rules() {
           </div>
           <div className="flex items-start gap-2 terminal-prompt">
             <span className="text-green-400">✓</span>
-            <span className="deploy-anxiety">
-              everyone wins (except hourly billing).
-            </span>
+            <span>everyone wins (except hourly billing).</span>
           </div>
         </div>
       </div>
