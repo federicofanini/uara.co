@@ -90,9 +90,6 @@ export function Updates() {
             </svg>
           </div>
         </h2>
-        <p className="text-muted-foreground text-sm font-mono opacity-80">
-          // building in public, staying accountable
-        </p>
       </div>
 
       {/* Simple scratchy list */}
