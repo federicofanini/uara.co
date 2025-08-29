@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "./ui/card";
-import { ArrowRight, Clock, Gift } from "lucide-react";
+import { ArrowRight, Cherry, Clock, Gift, HeartHandshake } from "lucide-react";
 import { Buttoon } from "./buttoon";
 import Link from "next/link";
 import { products } from "@/lib/products";
@@ -145,7 +145,13 @@ export function Pricing() {
                   className="w-full"
                   onClick={() => trackMVPClick("pricing_mvp_section")}
                 >
-                  <Link href={products[0].link}>gimme a website</Link>
+                  <Link
+                    href={products[0].link}
+                    className="flex items-center gap-2"
+                  >
+                    <Cherry className="w-4 h-4" />
+                    gimme a website
+                  </Link>
                 </Buttoon>
                 <p className="text-xs text-muted-foreground text-center mt-2 font-mono">
                   → flat one-time fee. no drama.
@@ -161,7 +167,7 @@ export function Pricing() {
             <CardHeader className="space-y-4">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-xl font-medium">
-                  the broke founder plan
+                  the founder plan
                 </CardTitle>
                 <div className="text-right">
                   <div className="flex items-baseline gap-2">
@@ -175,15 +181,15 @@ export function Pricing() {
                   </div>
                   <Badge
                     variant="outline"
-                    className="text-xs text-orange-300 border-orange-300"
+                    className="text-xs text-teal-300 border-teal-300"
                   >
-                    <Clock className="w-4 h-4" />
-                    coming soon
+                    <Gift className="w-4 h-4" />
+                    launch deal
                   </Badge>
                 </div>
               </div>
               <CardDescription className="text-muted-foreground">
-                hire me as a service.
+                all the features you need, one at a time.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -237,17 +243,22 @@ export function Pricing() {
               </div>
 
               <div className="pt-4">
-                <Button
+                <Buttoon
                   className="w-full"
-                  disabled
                   onClick={() =>
                     trackFounderPlanClick("pricing_founder_section")
                   }
                 >
-                  coming soon
-                </Button>
+                  <Link
+                    href={products[1].link}
+                    className="flex items-center gap-2"
+                  >
+                    <HeartHandshake className="w-4 h-4" />
+                    sub me
+                  </Link>
+                </Buttoon>
                 <p className="text-xs text-muted-foreground text-center mt-2 font-mono">
-                  → flat monthly fee. pause anytime. no drama.
+                  → flat monthly fee. pause anytime.
                 </p>
               </div>
             </CardContent>
