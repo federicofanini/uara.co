@@ -7,9 +7,6 @@ export function Hero() {
       {/* Main Hero Section */}
       <div className="text-center space-y-8 mb-16">
         <div className="space-y-4">
-          <div className="flex justify-center mb-4">
-            <Revenues />
-          </div>
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-normal text-foreground leading-tight">
             world-class websites for saas and startups
             <span className="text-teal-300">.</span>
