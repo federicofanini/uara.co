@@ -4,8 +4,6 @@ import { Logo } from "@/components/logo";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
-import { Suspense } from "react";
-import { GithubStars } from "./github-stars";
 import { MobileMenu } from "./mobile-menu";
 import { SignIn } from "./sign-in";
 import { Menu } from "./menu";
@@ -14,9 +12,9 @@ export function Header({ fullWidth = false }: { fullWidth?: boolean }) {
   const pathname = usePathname();
 
   const links = [
-    { href: "/works", label: "works" },
-    { href: "/pricing", label: "pricing" },
-    { href: "/transparency", label: "transparency" },
+    { href: "/works", label: "Works" },
+    { href: "/pricing", label: "Pricing" },
+    { href: "/faq", label: "FAQ" },
     {
       component: <Menu />,
       className:
@@ -46,13 +44,7 @@ export function Header({ fullWidth = false }: { fullWidth?: boolean }) {
         </Link>
 
         <div className="md:flex hidden items-center gap-6 text-sm">
-          <Link href="https://github.com/federicofanini/uara.co">
-            <Suspense fallback={<GithubStars />}>
-              <GithubStars />
-            </Suspense>
-          </Link>
-
-          <div className="hidden md:flex items-center gap-6 text-sm">
+          <div className="hidden md:flex items-center gap-6 text-sm font-mono">
             {links.map((link, i) =>
               link.component ? (
                 <div

@@ -6,7 +6,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { MdClose, MdMenu } from "react-icons/md";
-import { GithubStars } from "./github-stars";
 import { SignIn } from "./sign-in";
 
 export function MobileMenu() {
@@ -14,14 +13,10 @@ export function MobileMenu() {
   const pathname = usePathname();
 
   const links = [
-    { href: "/works", label: "works" },
-    { href: "/pricing", label: "pricing" },
-    { href: "/transparency", label: "transparency" },
-    { href: "/how-it-works", label: "how it works" },
-    {
-      href: "https://github.com/federicofanini/uara.co",
-      label: <GithubStars />,
-    },
+    { href: "/works", label: "Works" },
+    { href: "/pricing", label: "Pricing" },
+    { href: "/faq", label: "FAQ" },
+    { href: "/how-it-works", label: "How It Works" },
   ];
 
   useEffect(() => {

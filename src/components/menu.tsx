@@ -7,23 +7,23 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
+import { ChevronDown } from "lucide-react";
 
 export function Menu() {
   const links = [
-    { href: "/how-it-works", label: "how it works" },
-    { href: "/wall-of-love", label: "wall of love" },
-    { href: "/faq", label: "faq" },
-    { href: "/updates", label: "updates" },
-    { href: "/blog", label: "blog" },
+    { href: "/how-it-works", label: "How It Works" },
+    { href: "/wall-of-love", label: "Wall of Love" },
+    { href: "/updates", label: "Updates" },
+    { href: "/blog", label: "Blog" },
   ];
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
         type="button"
-        className="items-center gap-2 text-muted-foreground outline-none text-sm hidden md:flex"
+        className="items-center font-mono gap-0.5 text-muted-foreground outline-none text-sm hidden md:flex"
       >
-        more
+        More <ChevronDown className="size-3" />
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="end"
@@ -31,7 +31,7 @@ export function Menu() {
         className="max-h-[300px] overflow-y-auto text-muted-foreground"
       >
         {links.map((link) => (
-          <DropdownMenuItem key={link.href} className="text-xs">
+          <DropdownMenuItem key={link.href} className="text-xs font-mono">
             <Link href={link.href}>{link.label}</Link>
           </DropdownMenuItem>
         ))}
