@@ -5,7 +5,7 @@ import { trackHeroCTAClick } from "@/lib/events";
 
 export function Hero() {
   return (
-    <div className="flex flex-col items-center justify-center px-4 py-24 max-w-4xl mx-auto">
+    <div className="flex flex-col items-center justify-center px-4 py-20 max-w-4xl mx-auto">
       {/* Main Hero Section */}
       <div className="text-center space-y-8 mb-16">
         <div className="space-y-12">
@@ -46,7 +46,7 @@ function CTA() {
   };
 
   return (
-    <div className="w-full space-y-6">
+    <div className="w-full space-y-2">
       <p className="text-sm font-mono text-muted-foreground">
         Loved by Entrepreneurs ★★★★★
       </p>
@@ -60,10 +60,12 @@ function CTA() {
           Get Your Website
         </Buttoon>
 
-        <p className="text-xs font-mono text-muted-foreground">
-          <span className="font-semibold text-primary">$900 / Month</span> •
-          Unlimited Requests • Pause Anytime
-        </p>
+        <div className="text-center">
+          <p className="text-xs font-mono text-muted-foreground">
+            <span className="text-primary">90% cheaper</span> than agencies.
+            <span className="text-primary"> 10x faster</span> than freelancers.
+          </p>
+        </div>
       </div>
       <Highlights />
     </div>
@@ -136,12 +138,9 @@ function Highlights() {
       </div>
 
       {/* Bottom CTA Line */}
-      <div className="text-center">
-        <p className="text-xs font-mono text-muted-foreground">
-          <span className="text-teal-300">90% cheaper</span> than agencies.
-          <span className="text-teal-300"> 10x faster</span> than freelancers.
-        </p>
-      </div>
+      <p className="text-xs font-mono text-muted-foreground">
+        Unlimited Requests • Pause Anytime
+      </p>
     </div>
   );
 }
