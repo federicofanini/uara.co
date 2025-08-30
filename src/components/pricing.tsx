@@ -12,7 +12,6 @@ import { ArrowRight, Cherry, Clock, Gift, HeartHandshake } from "lucide-react";
 import { Buttoon } from "./buttoon";
 import Link from "next/link";
 import { products } from "@/lib/products";
-import { Button } from "./ui/button";
 import {
   trackHeroCTAClick,
   trackMVPClick,
@@ -44,18 +43,12 @@ export function Pricing() {
       {/* Header */}
       <div className="text-center space-y-4">
         <h2 className="text-2xl md:text-3xl font-medium text-foreground">
-          two plans. infinite copium<span className="text-teal-300">.</span>
+          Two plans. Infinite copium<span className="text-teal-300">.</span>
         </h2>
         <div className="flex flex-col gap-2 items-center justify-center">
           <Badge variant="secondary" className="text-xs font-mono">
             <span className="text-teal-300 font-bold">5/5</span> spots left.
           </Badge>
-          <Link
-            href="/queue"
-            className="text-xs text-muted-foreground font-mono flex items-center gap-2"
-          >
-            see queue <ArrowRight className="w-4 h-4" />
-          </Link>
         </div>
       </div>
 
@@ -66,7 +59,7 @@ export function Pricing() {
             <CardHeader className="space-y-4">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-xl font-medium">
-                  minimum viable page
+                  Minimum Viable Page
                 </CardTitle>
                 <div className="text-right">
                   <div className="flex items-baseline gap-2">
@@ -87,51 +80,41 @@ export function Pricing() {
                 </div>
               </div>
               <CardDescription className="text-muted-foreground">
-                fund science and get a website.
+                Get a website on a flat deal fee, no monthly subscriptions.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
-                  <span className="text-green-400 font-mono text-sm mt-1">
-                    ◇
-                  </span>
+                  <span className="text-teal-300 font-mono text-sm">◇</span>
                   <div>
                     <p className="text-sm font-medium">
-                      one-page site (next.js + shadcn).
+                      One-page site (Next.js + Shadcn).
                     </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <span className="text-green-400 font-mono text-sm mt-1">
-                    ◇
-                  </span>
+                  <span className="text-teal-300 font-mono text-sm">◇</span>
                   <div>
-                    <p className="text-sm font-medium">responsive + fast.</p>
+                    <p className="text-sm font-medium">Responsive + Fast.</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <span className="text-green-400 font-mono text-sm mt-1">
-                    ◇
-                  </span>
+                  <span className="text-teal-300 font-mono text-sm">◇</span>
                   <div>
-                    <p className="text-sm font-medium">copy + seo optimized.</p>
+                    <p className="text-sm font-medium">Copy + SEO optimized.</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <span className="text-green-400 font-mono text-sm mt-1">
-                    ◇
-                  </span>
+                  <span className="text-teal-300 font-mono text-sm">◇</span>
                   <div>
                     <p className="text-sm font-medium">
-                      full ownership (repos in your org, forever).
+                      Full ownership (repo in your GitHub).
                     </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <span className="text-green-400 font-mono text-sm mt-1">
-                    ◇
-                  </span>
+                  <span className="text-teal-300 font-mono text-sm">◇</span>
                   <div>
                     <p className="text-sm font-medium">
                       5 business days delivery time.
@@ -147,14 +130,13 @@ export function Pricing() {
                 >
                   <Link
                     href={products[0].link}
-                    className="flex items-center gap-2"
+                    className="flex items-center gap-2 font-semibold"
                   >
-                    <Cherry className="w-4 h-4" />
-                    gimme a website
+                    Get Your Website
                   </Link>
                 </Buttoon>
                 <p className="text-xs text-muted-foreground text-center mt-2 font-mono">
-                  → flat one-time fee. no drama.
+                  → Flat one-time fee. No drama.
                 </p>
               </div>
             </CardContent>
@@ -167,7 +149,7 @@ export function Pricing() {
             <CardHeader className="space-y-4">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-xl font-medium">
-                  the founder plan
+                  The Founder Plan
                 </CardTitle>
                 <div className="text-right">
                   <div className="flex items-baseline gap-2">
@@ -189,55 +171,44 @@ export function Pricing() {
                 </div>
               </div>
               <CardDescription className="text-muted-foreground">
-                all the features you need, one at a time.
+                All the features you need, one at a time. Perfect for startups
+                and entrepreneurs.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-4">
                 <div className="flex items-start gap-3">
-                  <span className="text-green-400 font-mono text-sm mt-1">
-                    ◇
-                  </span>
+                  <span className="text-teal-300 font-mono text-sm">◇</span>
                   <div>
                     <p className="text-sm font-medium">
-                      unlimited requests (one at a time).
+                      Unlimited requests (one at a time).
                     </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <span className="text-green-400 font-mono text-sm mt-1">
-                    ◇
-                  </span>
+                  <span className="text-teal-300 font-mono text-sm">◇</span>
                   <div>
                     <p className="text-sm font-medium">2–3 day turnaround.</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <span className="text-green-400 font-mono text-sm mt-1">
-                    ◇
-                  </span>
+                  <span className="text-teal-300 font-mono text-sm">◇</span>
                   <div>
                     <p className="text-sm font-medium">
-                      next.js + tailwind + shadcn.
+                      Next.js + Tailwind + Shadcn.
                     </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <span className="text-green-400 font-mono text-sm mt-1">
-                    ◇
-                  </span>
+                  <span className="text-teal-300 font-mono text-sm">◇</span>
                   <div>
-                    <p className="text-sm font-medium">
-                      full ownership (repos in your org).
-                    </p>
+                    <p className="text-sm font-medium">SEO + Analytics.</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <span className="text-green-400 font-mono text-sm mt-1">
-                    ◇
-                  </span>
+                  <span className="text-teal-300 font-mono text-sm">◇</span>
                   <div>
-                    <p className="text-sm font-medium">pause anytime.</p>
+                    <p className="text-sm font-medium">Full ownership.</p>
                   </div>
                 </div>
               </div>
@@ -251,14 +222,13 @@ export function Pricing() {
                 >
                   <Link
                     href={products[1].link}
-                    className="flex items-center gap-2"
+                    className="flex items-center gap-2 font-semibold"
                   >
-                    <HeartHandshake className="w-4 h-4" />
-                    sub me
+                    Subscribe
                   </Link>
                 </Buttoon>
                 <p className="text-xs text-muted-foreground text-center mt-2 font-mono">
-                  → flat monthly fee. pause anytime.
+                  → Flat monthly fee. Pause anytime.
                 </p>
               </div>
             </CardContent>
