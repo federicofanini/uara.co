@@ -10,30 +10,28 @@ export function Footer({ fullWidth = false }: { fullWidth?: boolean }) {
   const pathname = usePathname();
 
   const mainLinks = [
-    { href: "/works", label: "works" },
-    { href: "/pricing", label: "pricing" },
-    { href: "/transparency", label: "transparency" },
-    { href: "/how-it-works", label: "how it works" },
+    { href: "/works", label: "Works" },
+    { href: "/pricing", label: "Pricing" },
+    { href: "/how-it-works", label: "How It Works" },
   ];
 
   const otherLinks = [
-    { href: "/wall-of-love", label: "wall of love" },
-    { href: "/faq", label: "faq" },
-    { href: "/updates", label: "updates" },
-    { href: "/blog", label: "blog" },
+    { href: "/wall-of-love", label: "Wall of Love" },
+    { href: "/faq", label: "FAQ" },
+    { href: "/blog", label: "Blog" },
   ];
 
   const socialLinks = [
     {
       href: "https://github.com/federicofanini/uara.co",
       icon: Icons.github,
-      label: "github",
+      label: "GitHub",
     },
-    { href: "https://x.com/FedericoFan", icon: Icons.x, label: "twitter" },
+    { href: "https://x.com/FedericoFan", icon: Icons.x, label: "Twitter" },
     {
       href: "https://www.linkedin.com/in/federico-fanini/",
       icon: Icons.linkedin,
-      label: "linkedin",
+      label: "LinkedIn",
     },
   ];
 
@@ -46,17 +44,18 @@ export function Footer({ fullWidth = false }: { fullWidth?: boolean }) {
             <Logo />
             <div className="space-y-2">
               <p className="text-xs text-muted-foreground font-mono">
-                need a website? hire a broke founder.
+                Get a website, in days, for a flat fee.
               </p>
               <p className="text-[10px] text-muted-foreground">
-                flat monthly fee. pause anytime. no drama.
+                Ship without the stress. No endless revisions, no surprise
+                costs, no missed deadlines. Just reliable execution, on demand.
               </p>
             </div>
           </div>
 
           {/* Main Links */}
           <div className="space-y-4">
-            <h4 className="text-sm font-medium">main stuff</h4>
+            <h4 className="text-sm font-medium">Main</h4>
             <div className="space-y-2">
               {mainLinks.map((link) => (
                 <Link
@@ -76,7 +75,7 @@ export function Footer({ fullWidth = false }: { fullWidth?: boolean }) {
 
           {/* Other Links */}
           <div className="space-y-4">
-            <h4 className="text-sm font-medium">other stuff</h4>
+            <h4 className="text-sm font-medium">Other</h4>
             <div className="space-y-2">
               {otherLinks.map((link) => (
                 <Link
@@ -96,7 +95,7 @@ export function Footer({ fullWidth = false }: { fullWidth?: boolean }) {
 
           {/* Social & Inside Jokes */}
           <div className="space-y-4">
-            <h4 className="text-sm font-medium">social</h4>
+            <h4 className="text-sm font-medium">Social</h4>
             <div className="space-y-2">
               <div className="flex items-center gap-3">
                 {socialLinks.map((link) => (
@@ -121,10 +120,7 @@ export function Footer({ fullWidth = false }: { fullWidth?: boolean }) {
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div className="space-y-1">
               <p className="text-xs text-muted-foreground font-mono">
-                i code like my startup depends on it.
-              </p>
-              <p className="text-[10px] text-muted-foreground">
-                you get a website. i fund science. everyone wins.
+                You get a website. I fund science. Everyone wins.
               </p>
             </div>
 
@@ -135,7 +131,7 @@ export function Footer({ fullWidth = false }: { fullWidth?: boolean }) {
                   target="_blank"
                   className="hover:underline hover:underline-offset-2 hover:text-teal-300"
                 >
-                  pontus
+                  Pontus
                 </Link>{" "}
                 and{" "}
                 <Link
@@ -143,13 +139,12 @@ export function Footer({ fullWidth = false }: { fullWidth?: boolean }) {
                   target="_blank"
                   className="hover:underline hover:underline-offset-2 hover:text-teal-300"
                 >
-                  viktor
+                  Viktor
                 </Link>{" "}
                 are my gurus
               </p>
               <p className="text-[10px] text-muted-foreground">
-                © 2025 uara.co - all the buzzwords your indie hacker friends
-                love
+                © 2025 uara.co - All rights reserved.
               </p>
             </div>
           </div>

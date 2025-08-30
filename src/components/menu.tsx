@@ -13,7 +13,6 @@ export function Menu() {
   const links = [
     { href: "/how-it-works", label: "How It Works" },
     { href: "/wall-of-love", label: "Wall of Love" },
-    { href: "/updates", label: "Updates" },
     { href: "/blog", label: "Blog" },
   ];
 
