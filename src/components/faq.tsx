@@ -1,169 +1,154 @@
+import Link from "next/link";
+
 export function FAQ() {
   const faqs = [
     {
-      question: "how much does it cost?",
+      question: "How much does it cost?",
       answer: (
         <div className="space-y-2">
-          <p>flat $900/mo.</p>
-          <p>unlimited requests, one active at a time.</p>
-          <p>cancel or pause whenever.</p>
+          <p>Flat $900/mo.</p>
+          <p>Unlimited requests, one active at a time.</p>
+          <p>Cancel or pause whenever.</p>
           <p className="text-teal-300 font-mono text-sm">
-            aka: &quot;netflix for websites, but i actually build stuff.&quot;
+            aka: &quot;Netflix for websites, but I actually build stuff.&quot;
           </p>
         </div>
       ),
     },
     {
-      question: "how fast do you ship?",
+      question: "How fast do you ship?",
       answer: (
         <div className="space-y-2">
-          <p>most tasks: 2–3 business days.</p>
-          <p>sometimes faster.</p>
+          <p>Most tasks: 2–3 business days.</p>
+          <p>Sometimes faster.</p>
           <p>
-            if it&apos;s bigger → i&apos;ll chop it into smaller tasks so we
+            If it&apos;s bigger → I&apos;ll chop it into smaller tasks so we
             keep momentum.
           </p>
         </div>
       ),
     },
     {
-      question: "what do i actually get?",
+      question: "What do I actually get?",
       answer: (
         <div className="space-y-2">
-          <p>clean, modern websites using next.js + tailwind + shadcn.</p>
+          <p>Clean, modern websites using Next.js + Tailwind + Shadcn.</p>
           <p>
-            think: landing pages, pricing pages, blog sections, forms, speed
+            Think: landing pages, pricing pages, blog sections, forms, speed
             fixes.
           </p>
           <p className="text-teal-300 font-mono text-sm">
-            stuff you can ship now and brag about tomorrow.
+            Stuff you can ship now and brag about tomorrow.
           </p>
         </div>
       ),
     },
     {
-      question: "what's not included?",
+      question: "What's not included?",
       answer: (
         <div className="space-y-1">
           <div className="flex items-start gap-2">
             <span className="text-red-400 font-mono text-sm mt-1">×</span>
-            <p className="text-sm">giant webapps / enterprise dashboards</p>
+            <p className="text-sm">Giant webapps / enterprise dashboards</p>
+          </div>
+
+          <div className="flex items-start gap-2">
+            <span className="text-red-400 font-mono text-sm mt-1">×</span>
+            <p className="text-sm">Native mobile apps</p>
           </div>
           <div className="flex items-start gap-2">
             <span className="text-red-400 font-mono text-sm mt-1">×</span>
             <p className="text-sm">
-              &quot;just one tiny feature&quot; that eats 3 months
-            </p>
-          </div>
-          <div className="flex items-start gap-2">
-            <span className="text-red-400 font-mono text-sm mt-1">×</span>
-            <p className="text-sm">native mobile apps</p>
-          </div>
-          <div className="flex items-start gap-2">
-            <span className="text-red-400 font-mono text-sm mt-1">×</span>
-            <p className="text-sm">
-              ai metaverses on blockchain (sorry web3 bros)
+              AI metaverses on blockchain (sorry web3 bros)
             </p>
           </div>
         </div>
       ),
     },
     {
-      question: "do you do calls?",
+      question: "Do you do calls?",
       answer: (
         <div className="space-y-2">
-          <p>not really. i do commits.</p>
+          <p>Not really. I do commits.</p>
           <p>
-            we can do a quick kickoff if needed, but 99% async = faster + less
+            We can do a quick kickoff if needed, but 99% async = faster + less
             awkward.
           </p>
         </div>
       ),
     },
     {
-      question: "who owns the code?",
+      question: "Who owns the code?",
       answer: (
         <div className="space-y-2">
-          <p>you. 100%.</p>
+          <p>You. 100%.</p>
           <p>
-            the repo lives in your org. even if you cancel, it&apos;s still
+            The repo lives in your org. Even if you cancel, it&apos;s still
             yours.
           </p>
         </div>
       ),
     },
     {
-      question: "how do i request stuff?",
+      question: "How do I request stuff?",
       answer: (
         <div className="space-y-2">
-          <p>you&apos;ll get a simple dashboard + form.</p>
-          <p>add all the requests you want → i pick one → ship → repeat.</p>
+          <p>You&apos;ll get a simple dashboard + form.</p>
+          <p>Add all the requests you want → I pick one → ship → repeat.</p>
           <p className="text-teal-300 font-mono text-sm">
-            bonus: you&apos;ll feel productive just by typing them in.
+            Bonus: you&apos;ll feel productive just by typing them in.
           </p>
         </div>
       ),
     },
     {
-      question: "pause vs cancel?",
+      question: "Pause vs Cancel?",
       answer: (
         <div className="space-y-2">
           <p>
-            <span className="font-medium">pause</span> = stop billing, keep your
+            <span className="font-medium">Pause</span> = stop billing, keep your
             spot, come back later.
           </p>
           <p>
-            <span className="font-medium">cancel</span> = it&apos;s over,
+            <span className="font-medium">Cancel</span> = it&apos;s over,
             you&apos;ll need to re-subscribe (and i&apos;ll cry).
           </p>
           <p className="text-yellow-400 font-mono text-sm">
-            hint: pause is safer for both of us.
+            Hint: pause is safer for both of us.
           </p>
         </div>
       ),
     },
     {
-      question: "refunds?",
+      question: "Refunds?",
       answer: (
         <div className="space-y-2">
           <p>
-            nope. cancel anytime, but i don&apos;t venmo back money i already
-            invested in science.
+            Nope. Cancel anytime, but I don&apos;t give back money. We have
+            unlimited reviews to make it perfect.
           </p>
         </div>
       ),
     },
     {
-      question: "can you host my site?",
+      question: "Can you host my site?",
       answer: (
         <div className="space-y-2">
-          <p>yep → i deploy to vercel + hook up your domain.</p>
-          <p>you still own everything.</p>
+          <p>Yep → I deploy to Vercel + hook up your domain.</p>
+          <p>You still own everything.</p>
         </div>
       ),
     },
     {
-      question: "tech stack?",
+      question: "Tech stack?",
       answer: (
         <div className="space-y-2">
           <p>
-            next.js · tailwind · shadcn · supabase (if needed) · stripe ·
-            resend.
+            Next.js · Tailwind · Shadcn · Supabase (if needed) · Stripe ·
+            Resend.
           </p>
           <p className="text-teal-300 font-mono text-sm">
-            aka: all the buzzwords your startup friends love.
-          </p>
-        </div>
-      ),
-    },
-    {
-      question: "why are you doing this?",
-      answer: (
-        <div className="space-y-2">
-          <p>because i blew all my money on my medtech startup.</p>
-          <p>this keeps me alive while i keep funding science.</p>
-          <p className="text-teal-300 font-mono text-sm">
-            you get websites, i get survival. win-win.
+            Feel free to ask for more, we&apos;ll discuss it.
           </p>
         </div>
       ),
@@ -175,11 +160,8 @@ export function FAQ() {
       {/* Header */}
       <div className="text-center space-y-4">
         <h2 className="text-2xl md:text-3xl font-medium text-foreground">
-          faq<span className="text-teal-300">.</span>
+          FAQ<span className="text-teal-300">.</span>
         </h2>
-        <p className="text-muted-foreground leading-relaxed">
-          questions i get asked (and some i made up).
-        </p>
       </div>
 
       {/* FAQ Items */}
@@ -198,35 +180,17 @@ export function FAQ() {
 
       {/* Bottom CTA */}
       <div className="space-y-6">
-        <div className="code-block space-y-4">
-          <h3 className="text-lg font-medium text-foreground">
-            still have questions?
-          </h3>
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 terminal-prompt">
-              <span className="text-muted-foreground">→</span>
-              <span>
-                dm me on{" "}
-                <a
-                  href="https://x.com/FedericoFan"
-                  target="_blank"
-                  className="text-teal-300 hover:underline hover:underline-offset-4"
-                >
-                  x
-                </a>{" "}
-                with your question.
-              </span>
-            </div>
-            <div className="flex items-center gap-2 terminal-prompt">
-              <span className="text-muted-foreground">→</span>
-              <span className="caffeine-jitter">
-                i&apos;ll answer faster than you can say &quot;can we jump on a
-                call?&quot;
-              </span>
-              <span className="caffeine-level-high"></span>
-            </div>
-          </div>
-        </div>
+        <span className="text-lg font-medium text-foreground">
+          Till have questions? Reach out on{" "}
+          <Link
+            href="https://x.com/FedericoFan"
+            target="_blank"
+            className="text-teal-300 hover:underline hover:underline-offset-4"
+          >
+            X/Twitter
+          </Link>
+          .
+        </span>
       </div>
     </div>
   );

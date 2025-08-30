@@ -15,15 +15,9 @@ export default function Home() {
       <WallOfLove />
 
       <Pricing />
-      <DottedSeparator />
-      <Rules />
-      <DottedSeparator />
-      <Shipped />
-      <DottedSeparator />
-      <WallOfLove />
-      <DottedSeparator />
       <FAQ />
-      <DottedSeparator />
+
+      <Shipped />
       <AboutMe />
     </>
   );
