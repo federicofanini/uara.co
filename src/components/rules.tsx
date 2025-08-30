@@ -1,5 +1,69 @@
 import { Check, X } from "lucide-react";
 
+// Small card component for homepage
+export function HowItWorksCards() {
+  return (
+    <div className="w-full max-w-4xl mx-auto mt-24 mb-24">
+      <div className="text-center space-y-2 mb-8">
+        <p className="text-xs font-mono text-teal-300 uppercase tracking-wider">
+          HOW IT WORKS
+        </p>
+        <h3 className="text-lg font-semibold text-foreground">
+          Simple. Predictable. Fast.
+        </h3>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="border border-border rounded-lg p-4 bg-background/50 hover:bg-background/80 transition-colors">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-teal-300 font-mono text-sm font-bold">
+              1.
+            </span>
+            <span className="text-sm font-medium">Pay Monthly</span>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Flat fee, no surprises
+          </p>
+        </div>
+
+        <div className="border border-border rounded-lg p-4 bg-background/50 hover:bg-background/80 transition-colors">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-teal-300 font-mono text-sm font-bold">
+              2.
+            </span>
+            <span className="text-sm font-medium">Submit Requests</span>
+          </div>
+          <p className="text-xs text-muted-foreground">As many as you want</p>
+        </div>
+
+        <div className="border border-border rounded-lg p-4 bg-background/50 hover:bg-background/80 transition-colors">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-teal-300 font-mono text-sm font-bold">
+              3.
+            </span>
+            <span className="text-sm font-medium">We Ship</span>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            2–3 days, one at a time
+          </p>
+        </div>
+
+        <div className="border border-border rounded-lg p-4 bg-background/50 hover:bg-background/80 transition-colors">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-teal-300 font-mono text-sm font-bold">
+              4.
+            </span>
+            <span className="text-sm font-medium">Repeat</span>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Until it&apos;s perfect
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function Rules() {
   return (
     <div className="w-full space-y-16 max-w-4xl mx-auto px-4 py-16">
@@ -13,22 +77,19 @@ export function Rules() {
           <div className="code-block space-y-2">
             <div className="flex items-center gap-2 terminal-prompt">
               <span className="text-muted-foreground">1.</span>
-              <span>you pay me a flat monthly fee.</span>
+              <span>you pay a flat monthly fee.</span>
             </div>
             <div className="flex items-center gap-2 terminal-prompt">
               <span className="text-muted-foreground">2.</span>
-              <span>you throw requests at me.</span>
+              <span>you submit requests.</span>
             </div>
             <div className="flex items-center gap-2 terminal-prompt">
               <span className="text-muted-foreground">3.</span>
-              <span className="caffeine-jitter">
-                i ship them in 2–3 business days (one at a time).
-              </span>
-              <span className="caffeine-level-critical"></span>
+              <span>we ship them in 2–3 business days (one at a time).</span>
             </div>
             <div className="flex items-center gap-2 terminal-prompt">
               <span className="text-muted-foreground">4.</span>
-              <span>repeat until your site looks less embarrassing.</span>
+              <span>repeat until your site looks perfect.</span>
             </div>
           </div>
         </div>
