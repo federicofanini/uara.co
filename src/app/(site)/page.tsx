@@ -12,12 +12,13 @@ export default function Home() {
     <>
       <Hero />
       <HowItWorksCards />
+      <Shipped />
+
       <WallOfLove />
 
       <Pricing />
       <FAQ />
 
-      <Shipped />
       <AboutMe />
     </>
   );
