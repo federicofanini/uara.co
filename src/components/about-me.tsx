@@ -29,7 +29,7 @@ export function AboutMe() {
     <div className="w-full max-w-4xl mx-auto mt-24 mb-24">
       <div className="text-center space-y-2 mb-8">
         <p className="text-xs font-mono text-teal-300 uppercase tracking-wider">
-          FOUNDER'S LETTER
+          FOUNDER&apos;S LETTER
         </p>
         <h3 className="text-lg font-semibold text-foreground">
           Why You Should Root for Me

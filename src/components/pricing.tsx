@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "./ui/card";
-import { ArrowRight, Cherry, Clock, Gift, HeartHandshake } from "lucide-react";
+import { Gift } from "lucide-react";
 import { Buttoon } from "./buttoon";
 import Link from "next/link";
 import { products } from "@/lib/products";
