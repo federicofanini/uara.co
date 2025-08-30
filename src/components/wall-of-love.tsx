@@ -1,88 +1,22 @@
 export function WallOfLove() {
   const testimonials = [
     {
-      name: "Sarah Chen",
-      role: "Founder @ TechFlow",
+      name: "Priyanka Saini",
+      role: "Founder @ feedspace.io",
       content:
-        "Federico shipped our landing page in 2 days. Clean, fast, and exactly what we needed. No meetings, no drama, just results.",
-      avatar: "SC",
+        "Very cool !  love the mission behind Uara Best of luck pushing the MVP live and driving science forward 🙌🏽",
+      highlight: "love the mission behind Uara",
+      avatar: "/ppl/ps.jpg",
+      xLink: "https://x.com/PriyankaSaini28",
     },
     {
-      name: "Marcus Rodriguez",
-      role: "CEO @ DataVibe",
+      name: "Maxime Beaudoin",
+      role: "SW Engineer",
       content:
-        "Best subscription I've ever had. Unlimited requests, fast turnaround, and the guy actually knows what he's doing.",
-      avatar: "MR",
-    },
-    {
-      name: "Emily Watson",
-      role: "Product Lead @ StartupX",
-      content:
-        "Finally, someone who gets it. No calls, no BS, just beautiful websites. Federico is a machine.",
-      avatar: "EW",
-    },
-    {
-      name: "David Kim",
-      role: "Indie Hacker",
-      content:
-        "Paused my subscription for 3 months, came back, and Federico was still there. Reliable as hell.",
-      avatar: "DK",
-    },
-    {
-      name: "Lisa Thompson",
-      role: "Designer @ CreativeCo",
-      content:
-        "I'm a designer and even I use Federico for dev work. His shadcn implementations are *chef's kiss*",
-      avatar: "LT",
-    },
-    {
-      name: "Alex Turner",
-      role: "Founder @ GrowthLabs",
-      content:
-        "Tried 5 different agencies. Federico beats them all. One dude > entire teams.",
-      avatar: "AT",
-    },
-    {
-      name: "Maria Santos",
-      role: "CMO @ BrandFlow",
-      content:
-        "Our site went from embarrassing to professional in one week. Worth every euro.",
-      avatar: "MS",
-    },
-    {
-      name: "James Wilson",
-      role: "CTO @ TechStack",
-      content:
-        "Federico's code is cleaner than my apartment. And I'm pretty neat.",
-      avatar: "JW",
-    },
-    {
-      name: "Rachel Green",
-      role: "Startup Founder",
-      content:
-        "Needed a pricing page ASAP. Federico delivered in 1.5 days. Now we're actually making money.",
-      avatar: "RG",
-    },
-    {
-      name: "Tom Anderson",
-      role: "Product Manager",
-      content:
-        "The only developer who doesn't ask for a 2-hour discovery call. Just ships.",
-      avatar: "TA",
-    },
-    {
-      name: "Sophie Martin",
-      role: "E-commerce Owner",
-      content:
-        "My conversion rate doubled after Federico redesigned our hero section. Magic.",
-      avatar: "SM",
-    },
-    {
-      name: "Chris Lee",
-      role: "SaaS Founder",
-      content:
-        "Been subscribed for 6 months. Zero regrets. This man is funding science with websites.",
-      avatar: "CL",
+        "Pretty cool website and service ! Like the brutal honest stats too !",
+      highlight: "cool website and service",
+      avatar: "/ppl/mb.jpeg",
+      xLink: "https://x.com/maximbeaudoin",
     },
   ];
 
@@ -90,50 +24,80 @@ export function WallOfLove() {
     <div className="w-full space-y-16 max-w-4xl mx-auto px-4 py-16">
       {/* Header */}
       <div className="text-center space-y-4">
-        <h2 className="text-2xl md:text-3xl font-medium text-foreground">
-          wall of love<span className="text-teal-300">.</span>
-        </h2>
-        <p className="text-muted-foreground leading-relaxed">
-          real people, real websites, real results.
-        </p>
-        <p className="text-xs text-muted-foreground font-mono">
-          (ok, these are from gpt5, but i&apos;m sure i can add similar in a
-          while)
-        </p>
+        <div className="text-center space-y-2 mb-8">
+          <p className="text-xs font-mono text-teal-300 uppercase tracking-wider">
+            WALL OF LOVE
+          </p>
+          <h3 className="text-lg font-semibold text-foreground">
+            First Impressions and Testimonials
+          </h3>
+        </div>
       </div>
 
       {/* Testimonials Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {testimonials.map((testimonial, index) => (
-          <div
-            key={index}
-            className="bg-background/50 backdrop-blur-sm border border-border rounded-lg p-6 space-y-4 hover:border-teal-300/50 transition-colors"
-          >
-            {/* Content */}
-            <div className="space-y-3">
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                &quot;{testimonial.content}&quot;
-              </p>
-            </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {testimonials.map((testimonial, index) => {
+          const renderContentWithHighlight = (
+            content: string,
+            highlight: string
+          ) => {
+            if (!highlight) return content;
 
-            {/* Author */}
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-teal-300/10 border border-teal-300/20 flex items-center justify-center">
-                <span className="text-xs font-mono text-teal-300">
-                  {testimonial.avatar}
-                </span>
+            const parts = content.split(highlight);
+            if (parts.length === 1) return content;
+
+            return (
+              <>
+                {parts[0]}
+                <span className="text-teal-300 font-medium">{highlight}</span>
+                {parts[1]}
+              </>
+            );
+          };
+
+          return (
+            <div
+              key={index}
+              className="border border-border rounded-lg p-6 space-y-4 hover:border-teal-300/50 transition-colors"
+            >
+              {/* Content */}
+              <div className="space-y-3">
+                <p className="text-base text-muted-foreground leading-relaxed">
+                  &quot;
+                  {renderContentWithHighlight(
+                    testimonial.content,
+                    testimonial.highlight
+                  )}
+                  &quot;
+                </p>
               </div>
-              <div>
-                <p className="text-sm font-medium text-foreground">
-                  {testimonial.name}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {testimonial.role}
-                </p>
+
+              {/* Author */}
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full overflow-hidden">
+                  <img
+                    src={testimonial.avatar}
+                    alt={testimonial.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div>
+                  <a
+                    href={testimonial.xLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-base font-medium text-foreground hover:text-teal-300 transition-colors"
+                  >
+                    {testimonial.name},
+                  </a>
+                  <p className="text-sm text-muted-foreground">
+                    {testimonial.role}
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Stats Section */}

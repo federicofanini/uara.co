@@ -9,7 +9,7 @@ export function HowItWorksCards() {
           HOW IT WORKS
         </p>
         <h3 className="text-lg font-semibold text-foreground">
-          Simple. Predictable. Fast.
+          Simple, Predictable and Fast
         </h3>
       </div>
 

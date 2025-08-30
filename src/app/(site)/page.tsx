@@ -12,6 +12,8 @@ export default function Home() {
     <>
       <Hero />
       <HowItWorksCards />
+      <WallOfLove />
+
       <Pricing />
       <DottedSeparator />
       <Rules />
