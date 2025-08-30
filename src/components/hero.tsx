@@ -125,7 +125,7 @@ function Highlights() {
             <p className="text-xs font-mono text-primary uppercase font-bold">
               Uara.co
             </p>
-            <p className="text-xl font-bold text-foreground">€900</p>
+            <p className="text-xl font-bold text-foreground">$900</p>
             <p className="text-xs text-muted-foreground">/month</p>
 
             <div className="text-xs text-muted-foreground space-y-1 mt-3">
