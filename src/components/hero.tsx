@@ -7,7 +7,7 @@ export function Hero() {
   return (
     <div className="flex flex-col items-center justify-center px-4 py-20 max-w-4xl mx-auto">
       {/* Main Hero Section */}
-      <div className="text-center space-y-8 mb-16">
+      <div className="text-center space-y-8">
         <div className="space-y-12">
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-foreground">
             Get a website, in{" "}
