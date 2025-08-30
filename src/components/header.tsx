@@ -35,7 +35,7 @@ export function Header({ fullWidth = false }: { fullWidth?: boolean }) {
     <div className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg px-2 md:px-0">
       <div
         className={cn(
-          "flex items-center justify-between mx-auto py-4",
+          "flex items-center justify-between mx-auto",
           !fullWidth && "container"
         )}
       >
